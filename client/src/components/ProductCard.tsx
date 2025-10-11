@@ -30,8 +30,10 @@ export default function ProductCard({
   const [currentImage, setCurrentImage] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const isSwiping = useRef(false);
+  const touchStartY = useRef(0);
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     onToggleFavorite?.(id);
   };
@@ -45,21 +47,37 @@ export default function ProductCard({
     }
   };
 
+  const handleCardClick = () => {
+    if (!isSwiping.current) {
+      onClick?.(id);
+    }
+  };
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
+    
+    const swipeDistance = Math.abs(touchStartX.current - touchEndX.current);
+    const verticalDistance = Math.abs(touchStartY.current - e.touches[0].clientY);
+    
+    if (swipeDistance > 10 && swipeDistance > verticalDistance) {
+      isSwiping.current = true;
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    e.stopPropagation();
-    
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
+    if (isSwiping.current && Math.abs(swipeDistance) > minSwipeDistance) {
+      e.stopPropagation();
+      e.preventDefault();
+      
       if (swipeDistance > 0) {
         setCurrentImage((prev) => (prev + 1) % images.length);
       } else {
@@ -67,13 +85,27 @@ export default function ProductCard({
       }
     }
 
+    setTimeout(() => {
+      isSwiping.current = false;
+    }, 100);
+
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
 
+  const handleFavoriteTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleFavoriteTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    handleFavoriteClick(e);
+  };
+
   return (
     <div
-      onClick={() => onClick?.(id)}
+      onClick={handleCardClick}
       className="bg-card rounded-md border border-card-border overflow-hidden cursor-pointer"
       data-testid={`card-product-${id}`}
     >
@@ -83,14 +115,23 @@ export default function ProductCard({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <img
-          src={images[currentImage]}
-          alt={name}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
+        <div className="relative w-full h-full">
+          {images.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              alt={name}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                idx === currentImage ? "opacity-100" : "opacity-0"
+              }`}
+              loading="lazy"
+            />
+          ))}
+        </div>
         <button
           onClick={handleFavoriteClick}
+          onTouchStart={handleFavoriteTouchStart}
+          onTouchEnd={handleFavoriteTouchEnd}
           className="absolute top-2 left-2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center z-10"
           data-testid={`button-favorite-${id}`}
         >
@@ -104,7 +145,7 @@ export default function ProductCard({
             {images.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
                   idx === currentImage ? "bg-foreground" : "bg-foreground/30"
                 }`}
               />

@@ -29,6 +29,8 @@ export default function ProductDetail({
   const [favorite, setFavorite] = useState(isFavorite);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const touchStartY = useRef(0);
+  const isSwiping = useRef(false);
 
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % images.length);
@@ -45,17 +47,26 @@ export default function ProductDetail({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwiping.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
+    
+    const swipeDistance = Math.abs(touchStartX.current - touchEndX.current);
+    const verticalDistance = Math.abs(touchStartY.current - e.touches[0].clientY);
+    
+    if (swipeDistance > 10 && swipeDistance > verticalDistance) {
+      isSwiping.current = true;
+    }
   };
 
   const handleTouchEnd = () => {
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
+    if (isSwiping.current && Math.abs(swipeDistance) > minSwipeDistance) {
       if (swipeDistance > 0) {
         nextImage();
       } else {
@@ -63,6 +74,7 @@ export default function ProductDetail({
       }
     }
 
+    isSwiping.current = false;
     touchStartX.current = 0;
     touchEndX.current = 0;
   };
@@ -76,11 +88,18 @@ export default function ProductDetail({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <img
-          src={images[currentImage]}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
+        <div className="relative w-full h-full">
+          {images.map((img, idx) => (
+            <img
+              key={idx}
+              src={img}
+              alt={name}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                idx === currentImage ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+        </div>
         
         {images.length > 1 && (
           <>
@@ -108,7 +127,7 @@ export default function ProductDetail({
               {images.map((_, idx) => (
                 <div
                   key={idx}
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                     idx === currentImage ? "bg-foreground" : "bg-foreground/30"
                   }`}
                 />
