@@ -1,5 +1,6 @@
-import { Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useState, useRef } from "react";
 
 interface ProductDetailProps {
@@ -80,78 +81,63 @@ export default function ProductDetail({
   };
 
   return (
-    <div className="max-w-[420px] mx-auto" data-testid="product-detail">
-      {/* Image Gallery */}
-      <div
-        className="relative aspect-square bg-muted"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="relative w-full h-full">
-          {images.map((img, idx) => (
-            <img
-              key={idx}
-              src={img}
-              alt={name}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                idx === currentImage ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+    <div className="min-h-screen bg-background pb-6" data-testid="product-detail">
+      <div className="max-w-[420px] mx-auto">
+        {/* Back Button Header */}
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b px-4 py-3 flex items-center gap-3">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onBack}
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h2 className="text-lg font-semibold">Детали товара</h2>
         </div>
-        
-        {images.length > 1 && (
-          <>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 h-8 w-8"
-              data-testid="button-prev-image"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 h-8 w-8"
-              data-testid="button-next-image"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
 
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+        {/* Image Gallery */}
+        <div
+          className="relative aspect-square bg-muted"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="relative w-full h-full">
+            {images.map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={name}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                  idx === currentImage ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            ))}
+          </div>
+          
+          {/* Image Indicators */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
               {images.map((_, idx) => (
                 <div
                   key={idx}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    idx === currentImage ? "w-6 bg-foreground" : "w-2 bg-foreground/30"
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    idx === currentImage 
+                      ? "w-8 bg-foreground" 
+                      : "w-1.5 bg-foreground/40"
                   }`}
                 />
               ))}
             </div>
-          </>
-        )}
-      </div>
+          )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h1 className="text-xl font-semibold mb-2" data-testid="text-product-detail-name">
-              {name}
-            </h1>
-            <p className="text-2xl font-bold text-primary" data-testid="text-product-detail-price">
-              {price.toLocaleString()} сум
-            </p>
-          </div>
-          
+          {/* Favorite Button Overlay */}
           <Button
             size="icon"
-            variant="outline"
+            variant="ghost"
             onClick={handleFavorite}
+            className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm"
             data-testid="button-toggle-favorite"
           >
             <Heart
@@ -160,18 +146,38 @@ export default function ProductDetail({
           </Button>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-6" data-testid="text-product-description">
-          {description}
-        </p>
+        {/* Product Info */}
+        <div className="p-4 space-y-4">
+          <div>
+            <h1 className="text-2xl font-bold mb-2" data-testid="text-product-detail-name">
+              {name}
+            </h1>
+            <div className="flex items-baseline gap-2">
+              <p className="text-3xl font-bold text-primary" data-testid="text-product-detail-price">
+                {price.toLocaleString()}
+              </p>
+              <span className="text-sm text-muted-foreground">сум</span>
+            </div>
+          </div>
 
-        <Button
-          onClick={() => onAddToCart?.(id)}
-          className="w-full gap-2"
-          data-testid="button-add-to-cart-detail"
-        >
-          <ShoppingCart className="w-5 h-5" />
-          Добавить в корзину
-        </Button>
+          <div className="border-t pt-4">
+            <h3 className="text-sm font-semibold mb-2">Описание</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-product-description">
+              {description}
+            </p>
+          </div>
+
+          {/* Action Button */}
+          <Button
+            onClick={() => onAddToCart?.(id)}
+            className="w-full gap-2 h-12"
+            size="lg"
+            data-testid="button-add-to-cart-detail"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            Добавить в корзину
+          </Button>
+        </div>
       </div>
     </div>
   );
