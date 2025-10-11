@@ -11,6 +11,7 @@ interface OrderModalProps {
   items: OrderItem[];
   total: number;
   onClose: () => void;
+  onOrderComplete: () => void;
 }
 
 export default function OrderModal({
@@ -18,8 +19,14 @@ export default function OrderModal({
   items,
   total,
   onClose,
+  onOrderComplete,
 }: OrderModalProps) {
   if (!isOpen) return null;
+
+  const handleConfirm = () => {
+    onOrderComplete();
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" data-testid="modal-order">
@@ -47,7 +54,7 @@ export default function OrderModal({
         </p>
 
         <Button
-          onClick={onClose}
+          onClick={handleConfirm}
           className="w-full"
           data-testid="button-modal-close"
         >

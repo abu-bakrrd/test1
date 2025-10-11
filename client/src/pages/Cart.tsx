@@ -114,6 +114,7 @@ export default function Cart({
         items={orderItems}
         total={total}
         onClose={() => setIsModalOpen(false)}
+        onOrderComplete={onClearCart}
       />
     </div>
   );
