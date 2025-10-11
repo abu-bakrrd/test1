@@ -1,6 +1,6 @@
 import { Heart, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface ProductDetailProps {
   id: string;
@@ -27,6 +27,8 @@ export default function ProductDetail({
 }: ProductDetailProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [favorite, setFavorite] = useState(isFavorite);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % images.length);
@@ -41,10 +43,39 @@ export default function ProductDetail({
     onToggleFavorite?.(id);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
   return (
     <div className="max-w-[420px] mx-auto" data-testid="product-detail">
       {/* Image Gallery */}
-      <div className="relative aspect-square bg-muted">
+      <div
+        className="relative aspect-square bg-muted"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <img
           src={images[currentImage]}
           alt={name}
@@ -77,7 +108,7 @@ export default function ProductDetail({
               {images.map((_, idx) => (
                 <div
                   key={idx}
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-2 h-2 rounded-full transition-colors ${
                     idx === currentImage ? "bg-foreground" : "bg-foreground/30"
                   }`}
                 />
