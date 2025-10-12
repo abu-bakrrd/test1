@@ -1,11 +1,9 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask import Flask, jsonify, request, send_from_directory
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 
-app = Flask(__name__)
-CORS(app)
+app = Flask(__name__, static_folder='dist/public', static_url_path='')
 
 # Database connection
 def get_db_connection():
@@ -100,7 +98,7 @@ def init_db():
 
 # API Routes
 
-@app.route('/categories', methods=['GET'])
+@app.route('/api/categories', methods=['GET'])
 def get_categories():
     try:
         conn = get_db_connection()
@@ -113,7 +111,7 @@ def get_categories():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/categories', methods=['POST'])
+@app.route('/api/categories', methods=['POST'])
 def create_category():
     try:
         data = request.json
@@ -131,7 +129,7 @@ def create_category():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/products', methods=['GET'])
+@app.route('/api/products', methods=['GET'])
 def get_products():
     try:
         category_id = request.args.get('category_id')
@@ -150,7 +148,7 @@ def get_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/products', methods=['POST'])
+@app.route('/api/products', methods=['POST'])
 def create_product():
     try:
         data = request.json
@@ -168,7 +166,7 @@ def create_product():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/products/<product_id>', methods=['GET'])
+@app.route('/api/products/<product_id>', methods=['GET'])
 def get_product(product_id):
     try:
         conn = get_db_connection()
@@ -184,7 +182,7 @@ def get_product(product_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/favorites/<user_id>', methods=['GET'])
+@app.route('/api/favorites/<user_id>', methods=['GET'])
 def get_favorites(user_id):
     try:
         conn = get_db_connection()
@@ -201,7 +199,7 @@ def get_favorites(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/favorites', methods=['POST'])
+@app.route('/api/favorites', methods=['POST'])
 def add_to_favorites():
     try:
         data = request.json
@@ -219,7 +217,7 @@ def add_to_favorites():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/favorites/<user_id>/<product_id>', methods=['DELETE'])
+@app.route('/api/favorites/<user_id>/<product_id>', methods=['DELETE'])
 def remove_from_favorites(user_id, product_id):
     try:
         conn = get_db_connection()
@@ -236,7 +234,7 @@ def remove_from_favorites(user_id, product_id):
         return jsonify({'error': str(e)}), 500
 
 # Telegram Auth
-@app.route('/auth/telegram', methods=['POST'])
+@app.route('/api/auth/telegram', methods=['POST'])
 def telegram_auth():
     try:
         data = request.json
@@ -275,7 +273,7 @@ def telegram_auth():
         return jsonify({'error': str(e)}), 500
 
 # Cart endpoints
-@app.route('/cart/<user_id>', methods=['GET'])
+@app.route('/api/cart/<user_id>', methods=['GET'])
 def get_cart(user_id):
     try:
         conn = get_db_connection()
@@ -292,7 +290,7 @@ def get_cart(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/cart', methods=['POST'])
+@app.route('/api/cart', methods=['POST'])
 def add_to_cart():
     try:
         data = request.json
@@ -314,7 +312,7 @@ def add_to_cart():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/cart', methods=['PUT'])
+@app.route('/api/cart', methods=['PUT'])
 def update_cart_quantity():
     try:
         data = request.json
@@ -334,7 +332,7 @@ def update_cart_quantity():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/cart/<user_id>/<product_id>', methods=['DELETE'])
+@app.route('/api/cart/<user_id>/<product_id>', methods=['DELETE'])
 def remove_from_cart(user_id, product_id):
     try:
         conn = get_db_connection()
@@ -350,7 +348,7 @@ def remove_from_cart(user_id, product_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/cart/<user_id>', methods=['DELETE'])
+@app.route('/api/cart/<user_id>', methods=['DELETE'])
 def clear_cart(user_id):
     try:
         conn = get_db_connection()
@@ -363,9 +361,17 @@ def clear_cart(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Serve React App - this must be the last route
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    # If path is a file and exists in static folder, serve it
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    # Otherwise, serve index.html for SPA routing
+    return send_from_directory(app.static_folder, 'index.html')
+
 if __name__ == '__main__':
     # Tables are created by seed_db.py, no need to call init_db here
-    # Flask API runs on port 5000
-    # Vite dev server will run on 5173 during development
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
