@@ -4,8 +4,16 @@
 
 Flowery Bloom is a mobile-first Telegram Mini App for an online flower shop. The application features a clean, pastel-themed interface designed exclusively for mobile devices (max 420px width). Built with React and Express, it provides an e-commerce experience for browsing and purchasing flowers and greeting cards with a focus on simplicity and aesthetic appeal.
 
-## Recent Changes (October 11, 2025)
+## Recent Changes
 
+### October 12, 2025
+- **Telegram Mini App Database Integration**: Updated database schema for full Telegram authentication support
+- **Users Table**: Added `telegram_id` (BIGINT UNIQUE), `first_name`, `last_name` fields; made `username` and `password` optional
+- **Cart Table**: Created cart persistence table with user/product references and quantity tracking
+- **Schema Synchronization**: Aligned TypeScript (Drizzle), Python (Flask), and seed scripts with Telegram-ready structure
+- **Database Migration**: Successfully migrated existing database to new schema with ALTER TABLE commands
+
+### October 11, 2025
 - **Database Categories**: Migrated category data from hardcoded frontend arrays to PostgreSQL database with UUID-based schema
 - **API Integration**: Added `/api/categories` endpoint with Drizzle ORM and connected frontend to fetch categories dynamically
 - **Filter Reset**: Implemented "Сбросить" (Reset) button in FilterBar that appears when any filters are active
@@ -47,7 +55,7 @@ Preferred communication style: Simple, everyday language.
 **Routing Strategy:**
 - Client-side page state management without traditional routing
 - Page switching via state: 'home' | 'cart' | 'favorites' | 'product'
-- Currently uses mock data for product information
+- Connected to PostgreSQL database via Flask API for all product data
 
 ### Backend Architecture
 
@@ -64,9 +72,10 @@ Preferred communication style: Simple, everyday language.
 - Session management placeholder (connect-pg-simple available)
 
 **Storage Layer:**
-- In-memory storage implementation (`MemStorage`) for development
-- Database schema defined in `shared/schema.ts`
-- Prepared for database integration with user management structure
+- PostgreSQL database (Neon) connected and operational
+- Flask API handles all database operations via psycopg2
+- Database schema defined in `shared/schema.ts` (TypeScript/Drizzle)
+- Full CRUD operations for users, products, categories, cart, and favorites
 
 **Server Configuration:**
 - Development mode with Vite middleware integration
@@ -76,17 +85,19 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Models
 
-**Current Schema:**
-- `users` table: id (UUID), username (unique text), password (text)
+**Current Schema (Telegram Mini App Ready):**
+- `users` table: id (UUID), telegram_id (BIGINT UNIQUE), username (text), first_name (text), last_name (text), password (text optional)
 - `categories` table: id (UUID), name (text), icon (text)
+- `products` table: id (UUID), name (text), description (text), price (integer), images (text[]), category_id (UUID FK)
+- `favorites` table: id (UUID), user_id (UUID FK), product_id (UUID FK), UNIQUE(user_id, product_id)
+- `cart` table: id (UUID), user_id (UUID FK), product_id (UUID FK), quantity (integer), UNIQUE(user_id, product_id)
 - Zod validation schemas for type safety
 - Drizzle Zod integration for runtime validation
 
-**Expected Expansion:**
-- Products table (flowers, greeting cards)
-- Orders and order items
-- Shopping cart persistence
-- Favorites/wishlist
+**Future Expansion:**
+- Orders and order items tables
+- Payment integration
+- Delivery tracking
 
 ### State Management
 
