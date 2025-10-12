@@ -2,20 +2,28 @@
 
 ## Overview
 
-Flowery Bloom is a mobile-first Telegram Mini App for an online flower shop. The application features a clean, pastel-themed interface designed exclusively for mobile devices (max 420px width). Built with React and Express, it provides an e-commerce experience for browsing and purchasing flowers and greeting cards with a focus on simplicity and aesthetic appeal.
+Flowery Bloom is a mobile-first Telegram Mini App for an online flower shop. The application features a clean, pastel-themed interface designed exclusively for mobile devices (max 420px width). Built with React frontend and Flask backend, it provides an e-commerce experience for browsing and purchasing flowers and greeting cards with a focus on simplicity and aesthetic appeal.
 
 ## Recent Changes
 
-### October 12, 2025
+### October 12, 2025 (Latest)
+- **Pure Flask Architecture**: Simplified application to use only Flask (removed Node.js/Express dependency)
+- **Static File Serving**: Configured Flask to serve pre-built React frontend from `dist/public/`
+- **API Routes**: Added `/api` prefix to all Flask routes for proper SPA routing
+- **Database Setup**: Connected Neon PostgreSQL database with environment variables
+- **Production Build**: Created production build of React frontend (387.97 kB JS, 69.62 kB CSS)
+- **Startup Scripts**: Created `run_flask.sh` for running pure Flask application on port 5000
+
+### October 12, 2025 (Earlier)
 - **Telegram Mini App Database Integration**: Updated database schema for full Telegram authentication support
 - **Users Table**: Added `telegram_id` (BIGINT UNIQUE), `first_name`, `last_name` fields; made `username` and `password` optional
 - **Cart Table**: Created cart persistence table with user/product references and quantity tracking
-- **Schema Synchronization**: Aligned TypeScript (Drizzle), Python (Flask), and seed scripts with Telegram-ready structure
+- **Schema Synchronization**: Aligned frontend types, Flask API, and seed scripts with Telegram-ready structure
 - **Database Migration**: Successfully migrated existing database to new schema with ALTER TABLE commands
 
 ### October 11, 2025
 - **Database Categories**: Migrated category data from hardcoded frontend arrays to PostgreSQL database with UUID-based schema
-- **API Integration**: Added `/api/categories` endpoint with Drizzle ORM and connected frontend to fetch categories dynamically
+- **API Integration**: Added `/api/categories` endpoint and connected frontend to fetch categories dynamically
 - **Filter Reset**: Implemented "Сбросить" (Reset) button in FilterBar that appears when any filters are active
 - **UI Improvements**: Replaced native select with Shadcn Select component for sort dropdown with better mobile touch support
 - **Image Carousel**: Added swipe-to-browse functionality for product images with smooth opacity transitions (300ms)
@@ -60,26 +68,102 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 
 **Technology Stack:**
-- Express.js server with TypeScript
-- Drizzle ORM for database operations
+- Flask 3.1.2 (Python web framework)
+- psycopg2-binary for PostgreSQL operations
 - Neon serverless PostgreSQL database
-- WebSocket support for database connections
+- Static file serving for React frontend
 
 **API Structure:**
 - RESTful API endpoints prefixed with `/api`
-- Request/response logging middleware
-- Error handling middleware with status codes
-- Session management placeholder (connect-pg-simple available)
+- All routes return JSON responses
+- Error handling with proper HTTP status codes
+- Database operations via direct SQL queries with psycopg2
+
+**API Endpoints:**
+- `GET /api/categories` - List all categories
+- `GET /api/products` - List products (optional: ?category_id filter)
+- `GET /api/products/<id>` - Get single product
+- `GET /api/favorites/<user_id>` - Get user's favorites
+- `POST /api/favorites` - Add to favorites
+- `DELETE /api/favorites/<user_id>/<product_id>` - Remove from favorites
+- `POST /api/auth/telegram` - Telegram authentication
+- `GET /api/cart/<user_id>` - Get user's cart
+- `POST /api/cart` - Add to cart
+- `PUT /api/cart` - Update cart quantity
+- `DELETE /api/cart/<user_id>/<product_id>` - Remove from cart
+- `DELETE /api/cart/<user_id>` - Clear cart
+
+**Static File Serving:**
+- Flask serves pre-built React app from `dist/public/`
+- Catch-all route (`/<path:path>`) serves `index.html` for SPA routing
+- Static assets (JS, CSS, images) served from `dist/public/assets/`
 
 **Storage Layer:**
-- PostgreSQL database (Neon) connected and operational
-- Flask API handles all database operations via psycopg2
-- Database schema defined in `shared/schema.ts` (TypeScript/Drizzle)
-- Full CRUD operations for users, products, categories, cart, and favorites
+- PostgreSQL database (Neon) connected via DATABASE_URL
+- Database schema with tables: categories, products, users, favorites, cart
+- Full CRUD operations via SQL queries
+- Database seeded via `seed_db.py` script
 
-**Server Configuration:**
-- Development mode with Vite middleware integration
-- Production build with esbuild bundling
+## Running the Application
+
+### Pure Flask Mode (Recommended for Production/Deployment)
+
+The application has been simplified to run on pure Flask without Node.js:
+
+```bash
+bash run_flask.sh
+```
+
+This script:
+1. Seeds the database with initial data (categories and products)
+2. Starts Flask server on port 5000
+3. Serves pre-built React frontend from `dist/public/`
+4. Exposes API endpoints on `/api/*`
+
+**Note:** Before first run, ensure React frontend is built:
+```bash
+npm run build
+```
+
+### Development Mode
+
+For development, rebuild the frontend after changes:
+
+```bash
+npm run build && python app.py
+```
+
+Flask serves the updated static files. For faster iteration, you can also run Vite directly in dev mode:
+
+```bash
+# Terminal 1 - Flask backend
+PORT=5001 python app.py
+
+# Terminal 2 - Vite frontend  
+npm exec vite
+```
+
+Then access Vite dev server (with hot reload) at the Vite port, which proxies API calls to Flask on port 5001.
+
+## Deployment
+
+For deployment to services like Render or other platforms:
+
+1. Build the frontend:
+   ```bash
+   npm run build
+   ```
+
+2. Set environment variables:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `PORT` - Server port (default: 5000)
+
+3. Start the application:
+   ```bash
+   python app.py
+   ```
+
+The application is ready for deployment as a pure Python/Flask application with no Node.js runtime dependency.
 - Hot module replacement (HMR) in development
 - Static file serving for production builds
 
@@ -91,8 +175,7 @@ Preferred communication style: Simple, everyday language.
 - `products` table: id (UUID), name (text), description (text), price (integer), images (text[]), category_id (UUID FK)
 - `favorites` table: id (UUID), user_id (UUID FK), product_id (UUID FK), UNIQUE(user_id, product_id)
 - `cart` table: id (UUID), user_id (UUID FK), product_id (UUID FK), quantity (integer), UNIQUE(user_id, product_id)
-- Zod validation schemas for type safety
-- Drizzle Zod integration for runtime validation
+- All tables created and managed via SQL in seed_db.py
 
 **Future Expansion:**
 - Orders and order items tables
@@ -103,14 +186,14 @@ Preferred communication style: Simple, everyday language.
 
 **Client-Side:**
 - React hooks (useState, useEffect) for local component state
-- localStorage for cart and favorites persistence
-- Context-free prop drilling for data flow
-- Mock data structures in component files
+- TanStack Query (React Query) for server state and caching
+- Optimistic updates for cart and favorites
+- Automatic cache invalidation on mutations
 
 **Server-Side:**
-- Memory-based storage interface (`IStorage`)
-- CRUD operations abstraction
-- Prepared for database-backed persistence
+- PostgreSQL database for persistent storage
+- Direct SQL queries via psycopg2
+- Session-based cart and favorites per user
 
 ### Styling System
 
@@ -131,19 +214,24 @@ Preferred communication style: Simple, everyday language.
 ### Third-Party Services
 
 **Database:**
-- Neon Serverless PostgreSQL via `@neondatabase/serverless`
-- Connection pooling with WebSocket support
-- Drizzle ORM for type-safe database queries
+- Neon Serverless PostgreSQL
+- Direct connections via psycopg2-binary
+- DATABASE_URL environment variable for connection
 
 **UI Components:**
 - Radix UI primitives for accessible components (dialogs, dropdowns, tooltips, etc.)
 - Shadcn/ui component system built on Radix
 - Lucide React for iconography
 
-**Development Tools:**
-- Replit-specific plugins (vite-plugin-runtime-error-modal, cartographer, dev-banner)
-- ESBuild for production bundling
-- TypeScript for type safety across stack
+**Backend:**
+- Flask 3.1.2 for web framework
+- psycopg2-binary for PostgreSQL adapter
+- python-dotenv for environment management
+
+**Frontend Build:**
+- Vite for development and production builds
+- TypeScript for frontend type safety
+- Tailwind CSS for styling
 
 **Fonts:**
 - Google Fonts: Inter and Poppins families
