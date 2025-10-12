@@ -10,11 +10,6 @@ def get_db_connection():
     # Use DATABASE_URL if available, otherwise build from individual vars
     database_url = os.getenv('DATABASE_URL')
     
-    # Debug: print database connection info
-    print(f"DEBUG: DATABASE_URL = {database_url if database_url else 'NOT SET'}")
-    print(f"DEBUG: PGHOST = {os.getenv('PGHOST', 'NOT SET')}")
-    print(f"DEBUG: PGDATABASE = {os.getenv('PGDATABASE', 'NOT SET')}")
-    
     if database_url:
         # Add sslmode=require for Neon database
         if 'sslmode=' not in database_url:
@@ -371,7 +366,15 @@ def serve_react(path):
     # Otherwise, serve index.html for SPA routing
     return send_from_directory(app.static_folder, 'index.html')
 
+# Initialize database tables on startup
+try:
+    init_db()
+    print("Database tables initialized successfully")
+except Exception as e:
+    print(f"Warning: Could not initialize database tables: {e}")
+
+# Production: Gunicorn will use the 'app' object directly
+# For local development, you can still run: python app.py
 if __name__ == '__main__':
-    # Tables are created by seed_db.py, no need to call init_db here
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
