@@ -60,8 +60,11 @@ def seed_database():
     cur.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
+            telegram_id BIGINT UNIQUE,
+            username TEXT,
+            first_name TEXT,
+            last_name TEXT,
+            password TEXT
         )
     ''')
     
@@ -70,6 +73,16 @@ def seed_database():
             id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
             user_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
             product_id VARCHAR REFERENCES products(id) ON DELETE CASCADE,
+            UNIQUE(user_id, product_id)
+        )
+    ''')
+    
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS cart (
+            id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
+            product_id VARCHAR REFERENCES products(id) ON DELETE CASCADE,
+            quantity INTEGER NOT NULL DEFAULT 1,
             UNIQUE(user_id, product_id)
         )
     ''')
