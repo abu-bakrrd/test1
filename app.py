@@ -5,10 +5,6 @@ import os
 
 app = Flask(__name__, static_folder='dist/public', static_url_path='')
 
-@app.route('/')
-def home():
-    return '✅ MiniTasker API is running!'
-
 
 # Database connection
 def get_db_connection():
