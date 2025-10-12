@@ -65,8 +65,11 @@ def init_db():
     cur.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
+            username TEXT,
+            password TEXT,
+            telegram_id BIGINT UNIQUE,
+            first_name TEXT,
+            last_name TEXT
         )
     ''')
     
@@ -76,6 +79,17 @@ def init_db():
             id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
             user_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
             product_id VARCHAR REFERENCES products(id) ON DELETE CASCADE,
+            UNIQUE(user_id, product_id)
+        )
+    ''')
+    
+    # Create cart table
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS cart (
+            id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id VARCHAR REFERENCES users(id) ON DELETE CASCADE,
+            product_id VARCHAR REFERENCES products(id) ON DELETE CASCADE,
+            quantity INTEGER NOT NULL DEFAULT 1,
             UNIQUE(user_id, product_id)
         )
     ''')
@@ -218,6 +232,134 @@ def remove_from_favorites(user_id, product_id):
         cur.close()
         conn.close()
         return jsonify({'message': 'Removed from favorites'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Telegram Auth
+@app.route('/auth/telegram', methods=['POST'])
+def telegram_auth():
+    try:
+        data = request.json
+        telegram_id = data.get('telegram_id')
+        first_name = data.get('first_name', '')
+        last_name = data.get('last_name', '')
+        username = data.get('username', '')
+        
+        if not telegram_id:
+            return jsonify({'error': 'telegram_id is required'}), 400
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Check if user exists
+        cur.execute('SELECT * FROM users WHERE telegram_id = %s', (telegram_id,))
+        user = cur.fetchone()
+        
+        if user:
+            # User exists, return user data
+            cur.close()
+            conn.close()
+            return jsonify({'user': user, 'is_new': False})
+        else:
+            # Create new user
+            cur.execute(
+                'INSERT INTO users (telegram_id, username, first_name, last_name) VALUES (%s, %s, %s, %s) RETURNING *',
+                (telegram_id, username, first_name, last_name)
+            )
+            new_user = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({'user': new_user, 'is_new': True}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Cart endpoints
+@app.route('/cart/<user_id>', methods=['GET'])
+def get_cart(user_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            SELECT p.*, c.quantity FROM products p
+            JOIN cart c ON p.id = c.product_id
+            WHERE c.user_id = %s
+        ''', (user_id,))
+        cart_items = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(cart_items)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/cart', methods=['POST'])
+def add_to_cart():
+    try:
+        data = request.json
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            '''INSERT INTO cart (user_id, product_id, quantity) 
+               VALUES (%s, %s, %s) 
+               ON CONFLICT (user_id, product_id) 
+               DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity
+               RETURNING *''',
+            (data['user_id'], data['product_id'], data.get('quantity', 1))
+        )
+        cart_item = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify(cart_item), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/cart', methods=['PUT'])
+def update_cart_quantity():
+    try:
+        data = request.json
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE cart SET quantity = %s WHERE user_id = %s AND product_id = %s RETURNING *',
+            (data['quantity'], data['user_id'], data['product_id'])
+        )
+        cart_item = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        if cart_item:
+            return jsonify(cart_item)
+        return jsonify({'error': 'Cart item not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/cart/<user_id>/<product_id>', methods=['DELETE'])
+def remove_from_cart(user_id, product_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            'DELETE FROM cart WHERE user_id = %s AND product_id = %s',
+            (user_id, product_id)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({'message': 'Removed from cart'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/cart/<user_id>', methods=['DELETE'])
+def clear_cart(user_id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM cart WHERE user_id = %s', (user_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({'message': 'Cart cleared'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
