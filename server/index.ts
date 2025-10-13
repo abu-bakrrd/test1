@@ -73,7 +73,7 @@ app.use('/api', createProxyMiddleware({
   target: `http://localhost:${FLASK_PORT}`,
   changeOrigin: true,
   pathRewrite: {
-    '^/api': '' // Remove /api prefix when forwarding to Flask
+    '^/api': '/api' // Keep /api prefix when forwarding to Flask
   }
 }));
 
