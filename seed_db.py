@@ -93,6 +93,7 @@ def seed_database():
     cur.execute('SELECT COUNT(*) as count FROM categories')
     result = cur.fetchone()
     
+    category_ids = {}
     if result and result['count'] == 0:
         print("Добавление категорий...")
         categories = [
@@ -102,7 +103,6 @@ def seed_database():
             ('Букеты', '💐'),
         ]
         
-        category_ids = {}
         for name, icon in categories:
             cur.execute(
                 'INSERT INTO categories (name, icon) VALUES (%s, %s) RETURNING id',
@@ -115,7 +115,109 @@ def seed_database():
         conn.commit()
         print(f"Добавлено {len(categories)} категорий")
     else:
-        print("База данных уже содержит данные")
+        print("Категории уже существуют, загружаем их...")
+        # Load existing category IDs
+        cur.execute('SELECT id, name FROM categories')
+        categories = cur.fetchall()
+        for cat in categories:
+            category_ids[cat['name']] = cat['id']
+        print(f"Загружено {len(category_ids)} категорий")
+    
+    # Check if products exist
+    cur.execute('SELECT COUNT(*) as count FROM products')
+    product_count = cur.fetchone()
+    
+    if product_count and product_count['count'] == 0:
+        print("Добавление товаров...")
+        products = [
+            # Розы
+            {
+                'name': 'Красные розы "Классика"',
+                'description': 'Букет из 15 красных роз высшего качества',
+                'price': 2500,
+                'images': ['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800', 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800'],
+                'category': 'Розы'
+            },
+            {
+                'name': 'Белые розы "Нежность"',
+                'description': 'Букет из 11 белых роз',
+                'price': 2200,
+                'images': ['https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=800'],
+                'category': 'Розы'
+            },
+            {
+                'name': 'Розовые розы "Романтика"',
+                'description': 'Букет из 21 розовой розы',
+                'price': 3500,
+                'images': ['https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800'],
+                'category': 'Розы'
+            },
+            # Тюльпаны
+            {
+                'name': 'Тюльпаны "Весна"',
+                'description': 'Яркий букет из 25 разноцветных тюльпанов',
+                'price': 1800,
+                'images': ['https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800'],
+                'category': 'Тюльпаны'
+            },
+            {
+                'name': 'Красные тюльпаны',
+                'description': 'Букет из 15 красных тюльпанов',
+                'price': 1500,
+                'images': ['https://images.unsplash.com/photo-1520763185298-1b434c919102?w=800'],
+                'category': 'Тюльпаны'
+            },
+            # Пионы
+            {
+                'name': 'Пионы "Роскошь"',
+                'description': 'Букет из 7 крупных пионов',
+                'price': 3200,
+                'images': ['https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800'],
+                'category': 'Пионы'
+            },
+            {
+                'name': 'Белые пионы',
+                'description': 'Букет из 5 белых пионов',
+                'price': 2800,
+                'images': ['https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=800'],
+                'category': 'Пионы'
+            },
+            # Букеты
+            {
+                'name': 'Букет "Летний день"',
+                'description': 'Яркий микс полевых цветов',
+                'price': 2000,
+                'images': ['https://images.unsplash.com/photo-1487070183336-b863922373d4?w=800'],
+                'category': 'Букеты'
+            },
+            {
+                'name': 'Букет "Нежность"',
+                'description': 'Романтичный букет в пастельных тонах',
+                'price': 2700,
+                'images': ['https://images.unsplash.com/photo-1535288262947-259331d73d4f?w=800'],
+                'category': 'Букеты'
+            },
+            {
+                'name': 'Букет "Премиум"',
+                'description': 'Роскошная композиция из роз и пионов',
+                'price': 4500,
+                'images': ['https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800'],
+                'category': 'Букеты'
+            },
+        ]
+        
+        for product in products:
+            category_id = category_ids.get(product['category'])
+            if category_id:
+                cur.execute(
+                    'INSERT INTO products (name, description, price, images, category_id) VALUES (%s, %s, %s, %s, %s)',
+                    (product['name'], product['description'], product['price'], product['images'], category_id)
+                )
+        
+        conn.commit()
+        print(f"Добавлено {len(products)} товаров")
+    else:
+        print(f"Товары уже существуют ({product_count['count']} шт.)")
     
     cur.close()
     conn.close()
