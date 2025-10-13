@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, bigint, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, bigint, integer, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -31,14 +31,18 @@ export const favorites = pgTable("favorites", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   user_id: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   product_id: varchar("product_id").references(() => products.id, { onDelete: "cascade" }),
-});
+}, (table) => ({
+  uniqueUserProduct: unique().on(table.user_id, table.product_id),
+}));
 
 export const cart = pgTable("cart", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   user_id: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   product_id: varchar("product_id").references(() => products.id, { onDelete: "cascade" }),
   quantity: integer("quantity").notNull().default(1),
-});
+}, (table) => ({
+  uniqueUserProduct: unique().on(table.user_id, table.product_id),
+}));
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
