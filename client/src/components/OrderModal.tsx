@@ -50,7 +50,7 @@ export default function OrderModal({
         </div>
 
         <p className="text-sm text-muted-foreground mb-6">
-          Наш менеджер <span className="text-primary">@flowerybloom</span> свяжется с вами для оформления.
+          Наш менеджер <span className="text-primary">@flowery_b1oom</span> свяжется с вами для оформления.
         </p>
 
         <Button

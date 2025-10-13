@@ -253,7 +253,7 @@ The application is ready for deployment as a pure Python/Flask application with 
 
 **Payment Processing:**
 - Not yet implemented
-- Order flow currently ends with manager contact (@flowerybloom)
+- Order flow currently ends with manager contact (@flowery_b1oom)
 
 **Content Delivery:**
 - Static assets served via Vite in development
