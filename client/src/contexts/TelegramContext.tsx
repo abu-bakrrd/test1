@@ -41,6 +41,11 @@ export function TelegramProvider({ children }: TelegramProviderProps) {
         if (window.Telegram?.WebApp) {
           window.Telegram.WebApp.ready();
           console.log('🔵 Telegram WebApp initialized');
+          console.log('🔍 WebApp data:', {
+            initDataUnsafe: window.Telegram.WebApp.initDataUnsafe,
+            initData: window.Telegram.WebApp.initData,
+            platform: (window.Telegram.WebApp as any).platform,
+          });
         }
 
         // Method 1: Try standard Telegram WebApp API first

@@ -10,6 +10,7 @@ declare global {
 
     interface TelegramWebApp {
       initDataUnsafe?: TelegramWebAppInitData;
+      initData?: string;
       ready: () => void;
     }
 
