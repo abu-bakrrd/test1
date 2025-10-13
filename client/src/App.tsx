@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { TelegramProvider, useTelegram } from "@/contexts/TelegramContext";
 import { useCart } from "@/hooks/useCart";
 import { useFavorites } from "@/hooks/useFavorites";
+import { UserDebugBadge } from "@/components/UserDebugBadge";
 import Home from "@/pages/Home";
 import Cart from "@/pages/Cart";
 import Favorites from "@/pages/Favorites";
@@ -103,6 +104,7 @@ function AppContent() {
 
   return (
     <div className="max-w-[420px] mx-auto bg-background min-h-screen">
+      <UserDebugBadge />
       {currentPage === 'home' && (
         <Home
           onCartClick={() => setCurrentPage('cart')}

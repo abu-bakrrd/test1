@@ -232,7 +232,7 @@ def remove_from_favorites(user_id, product_id):
         return jsonify({'error': str(e)}), 500
 
 # Telegram Auth
-@app.route('/api/auth/telegram', methods=['POST'])
+@app.route('/auth/telegram', methods=['POST'])
 def telegram_auth():
     try:
         data = request.json
