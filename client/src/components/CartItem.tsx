@@ -1,5 +1,6 @@
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface CartItemProps {
   id: string;
@@ -20,13 +21,22 @@ export default function CartItem({
   onQuantityChange,
   onRemove,
 }: CartItemProps) {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <div className="flex gap-3 p-3 bg-card rounded-md border border-card-border" data-testid={`cart-item-${id}`}>
-      <img
-        src={images[0]}
-        alt={name}
-        className="w-20 h-20 object-cover rounded-md"
-      />
+      <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center overflow-hidden">
+        {imageError ? (
+          <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
+        ) : (
+          <img
+            src={images[0]}
+            alt={name}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        )}
+      </div>
       
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-medium mb-1 line-clamp-2" data-testid={`text-cart-item-name-${id}`}>

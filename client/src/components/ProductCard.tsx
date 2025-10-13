@@ -1,4 +1,4 @@
-import { Heart, ShoppingCart, Check } from "lucide-react";
+import { Heart, ShoppingCart, Check, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
 
@@ -28,6 +28,7 @@ export default function ProductCard({
   onCartClick,
 }: ProductCardProps) {
   const [currentImage, setCurrentImage] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const isSwiping = useRef(false);
@@ -117,15 +118,29 @@ export default function ProductCard({
       >
         <div className="relative w-full h-full">
           {images.map((img, idx) => (
-            <img
-              key={idx}
-              src={img}
-              alt={name}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                idx === currentImage ? "opacity-100" : "opacity-0"
-              }`}
-              loading="lazy"
-            />
+            imageErrors.has(idx) ? (
+              <div
+                key={idx}
+                className={`absolute inset-0 w-full h-full flex items-center justify-center transition-opacity duration-300 ${
+                  idx === currentImage ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <ImageIcon className="w-16 h-16 text-muted-foreground/40" />
+              </div>
+            ) : (
+              <img
+                key={idx}
+                src={img}
+                alt={name}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                  idx === currentImage ? "opacity-100" : "opacity-0"
+                }`}
+                loading="lazy"
+                onError={() => {
+                  setImageErrors(prev => new Set(prev).add(idx));
+                }}
+              />
+            )
           ))}
         </div>
         <button
