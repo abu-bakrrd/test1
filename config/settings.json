@@ -1,7 +1,7 @@
 {
   "shopName": "Flowery Bloom",
   "description": "Интернет-магазин цветов и открыток",
-  "logo": "/config/logo.png",
+  "logo": "/config/logo.svg",
   "currency": {
     "symbol": "₽",
     "code": "RUB",
