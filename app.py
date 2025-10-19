@@ -39,15 +39,6 @@ def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Create categories table if not exists
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS categories (
-            id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-            name TEXT NOT NULL,
-            icon TEXT NOT NULL
-        )
-    ''')
-    
     # Create products table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS products (
@@ -56,7 +47,7 @@ def init_db():
             description TEXT,
             price INTEGER NOT NULL,
             images TEXT[] NOT NULL,
-            category_id VARCHAR REFERENCES categories(id)
+            category TEXT
         )
     ''')
     
@@ -117,46 +108,15 @@ def serve_config_files(filename):
     except Exception as e:
         return jsonify({'error': str(e)}), 404
 
-@app.route('/api/categories', methods=['GET'])
-def get_categories():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM categories')
-        categories = cur.fetchall()
-        cur.close()
-        conn.close()
-        return jsonify(categories)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/categories', methods=['POST'])
-def create_category():
-    try:
-        data = request.json
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(
-            'INSERT INTO categories (name, icon) VALUES (%s, %s) RETURNING *',
-            (data['name'], data['icon'])
-        )
-        category = cur.fetchone()
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify(category), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/products', methods=['GET'])
 def get_products():
     try:
-        category_id = request.args.get('category_id')
+        category = request.args.get('category')
         conn = get_db_connection()
         cur = conn.cursor()
         
-        if category_id:
-            cur.execute('SELECT * FROM products WHERE category_id = %s', (category_id,))
+        if category:
+            cur.execute('SELECT * FROM products WHERE category = %s', (category,))
         else:
             cur.execute('SELECT * FROM products')
         
@@ -174,8 +134,8 @@ def create_product():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(
-            'INSERT INTO products (name, description, price, images, category_id) VALUES (%s, %s, %s, %s, %s) RETURNING *',
-            (data['name'], data.get('description'), data['price'], data['images'], data.get('category_id'))
+            'INSERT INTO products (name, description, price, images, category) VALUES (%s, %s, %s, %s, %s) RETURNING *',
+            (data['name'], data.get('description'), data['price'], data['images'], data.get('category'))
         )
         product = cur.fetchone()
         conn.commit()
@@ -452,14 +412,6 @@ def create_order():
 # ============================================================
 # API Blueprint Routes (with /api prefix for Render deployment)
 # ============================================================
-
-@api.route('/categories', methods=['GET'])
-def api_get_categories():
-    return get_categories()
-
-@api.route('/categories', methods=['POST'])
-def api_create_category():
-    return create_category()
 
 @api.route('/products', methods=['GET'])
 def api_get_products():
