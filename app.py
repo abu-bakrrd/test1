@@ -99,6 +99,24 @@ def init_db():
 
 # API Routes
 
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    try:
+        import json
+        config_path = os.path.join(os.path.dirname(__file__), 'config', 'settings.json')
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        return jsonify(config)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/config/<path:filename>')
+def serve_config_files(filename):
+    try:
+        return send_from_directory('config', filename)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 404
+
 @app.route('/api/categories', methods=['GET'])
 def get_categories():
     try:
