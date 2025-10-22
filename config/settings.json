@@ -1,35 +1,46 @@
 {
-  "shopName": "Shop Name",
-  "description": "Shop Description",
+  "shopName": "RONVÉL",
+  "description": "RONVÉL",
   "logo": "/config/logo.svg",
   "currency": {
-    "symbol": "$",
-    "code": "USD",
-    "position": "before"
+    "symbol": "UZS",
+    "code": "UZS",
+    "position": "after"
   },
-  "managerContact": "@shop_manager",
+  "managerContact": "@gayupov_a",
   "categories": [
-    {
-      "id": "category-1",
-      "name": "Category 1",
-      "icon": "📦"
-    },
-    {
-      "id": "category-2",
-      "name": "Category 2",
-      "icon": "🏷️"
-    },
-    {
-      "id": "category-3",
-      "name": "Category 3",
-      "icon": "✨"
-    },
-    {
-      "id": "category-4",
-      "name": "Category 4",
-      "icon": "🎁"
-    }
-  ],
+  {
+    "id": "0",
+    "name": "Образы",
+    "icon": "🧍‍♂️"
+  },
+  {
+    "id": "1",
+    "name": "Головные уборы",
+    "icon": "🧢"
+  },
+  {
+    "id": "2",
+    "name": "Верхняя одежда",
+    "icon": "🧥"
+  },
+  {
+    "id": "3",
+    "name": "Нижняя одежда",
+    "icon": "👖"
+  },
+  {
+    "id": "4",
+    "name": "Обувь",
+    "icon": "👞"
+  },
+  {
+    "id": "5",
+    "name": "Аксессуары",
+    "icon": "⌚"
+  }
+]
+,
   "colorScheme": {
     "background": "#FEFEFE",
     "foreground": "#1A1A1A",
@@ -50,24 +61,19 @@
   "sortOptions": [
     {
       "id": "new",
-      "label": "New Items",
-      "emoji": "✨"
+      "label": "Новое",
+      "emoji": ""
     },
     {
-      "id": "price_asc",
-      "label": "Price: Low to High",
-      "emoji": "💰"
+      "id": "cheper",
+      "label": "Дешевые",
+      "emoji": ""
     },
     {
-      "id": "price_desc",
-      "label": "Price: High to Low",
-      "emoji": "💎"
+      "id": "expencive",
+      "label": "Дороже",
+      "emoji": ""
     },
-    {
-      "id": "popular",
-      "label": "Popular",
-      "emoji": "🔥"
-    }
   ],
   "ui": {
     "maxWidth": "420px",
