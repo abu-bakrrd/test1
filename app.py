@@ -47,7 +47,7 @@ def init_db():
             description TEXT,
             price INTEGER NOT NULL,
             images TEXT[] NOT NULL,
-            category TEXT
+            category_id TEXT
         )
     ''')
     
@@ -116,7 +116,7 @@ def get_products():
         cur = conn.cursor()
         
         if category:
-            cur.execute('SELECT * FROM products WHERE category = %s', (category,))
+            cur.execute('SELECT * FROM products WHERE category_id = %s', (category,))
         else:
             cur.execute('SELECT * FROM products')
         
@@ -134,8 +134,8 @@ def create_product():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(
-            'INSERT INTO products (name, description, price, images, category) VALUES (%s, %s, %s, %s, %s) RETURNING *',
-            (data['name'], data.get('description'), data['price'], data['images'], data.get('category'))
+            'INSERT INTO products (name, description, price, images, category_id) VALUES (%s, %s, %s, %s, %s) RETURNING *',
+            (data['name'], data.get('description'), data['price'], data['images'], data.get('category_id'))
         )
         product = cur.fetchone()
         conn.commit()

@@ -12,6 +12,8 @@ export const users = pgTable("users", {
   password: text("password"),
 });
 
+// Categories are now stored in config/settings.json, not in database
+// Keeping the type definition for compatibility with frontend
 export const categories = pgTable("categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -24,7 +26,7 @@ export const products = pgTable("products", {
   description: text("description"),
   price: integer("price").notNull(),
   images: text("images").array().notNull(),
-  category_id: varchar("category_id").references(() => categories.id),
+  category_id: text("category_id"), // Stores category ID from config (e.g., "category-1")
 });
 
 export const favorites = pgTable("favorites", {
