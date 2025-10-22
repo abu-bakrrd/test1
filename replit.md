@@ -1,4 +1,4 @@
-# Flowery Bloom - Universal Telegram Mini App Template
+# Universal E-Commerce Telegram Mini App Template
 
 ## Overview
 

@@ -95,12 +95,12 @@ def seed_database():
     
     category_ids = {}
     if result and result['count'] == 0:
-        print("Добавление категорий...")
+        print("Adding categories...")
         categories = [
-            ('Розы', '🌹'),
-            ('Тюльпаны', '🌷'),
-            ('Пионы', '🏵️'),
-            ('Букеты', '💐'),
+            ('Category 1', '📦'),
+            ('Category 2', '🏷️'),
+            ('Category 3', '✨'),
+            ('Category 4', '🎁'),
         ]
         
         for name, icon in categories:
@@ -113,96 +113,96 @@ def seed_database():
                 category_ids[name] = result['id']
         
         conn.commit()
-        print(f"Добавлено {len(categories)} категорий")
+        print(f"Added {len(categories)} categories")
     else:
-        print("Категории уже существуют, загружаем их...")
+        print("Categories already exist, loading them...")
         # Load existing category IDs
         cur.execute('SELECT id, name FROM categories')
         categories = cur.fetchall()
         for cat in categories:
             category_ids[cat['name']] = cat['id']
-        print(f"Загружено {len(category_ids)} категорий")
+        print(f"Loaded {len(category_ids)} categories")
     
     # Check if products exist
     cur.execute('SELECT COUNT(*) as count FROM products')
     product_count = cur.fetchone()
     
     if product_count and product_count['count'] == 0:
-        print("Добавление товаров...")
+        print("Adding products...")
         products = [
-            # Розы
+            # Category 1
             {
-                'name': 'Красные розы "Классика"',
-                'description': 'Букет из 15 красных роз высшего качества',
-                'price': 300000,
-                'images': ['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800', 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800'],
-                'category': 'Розы'
+                'name': 'Product Name 1',
+                'description': 'Product description with details about the item',
+                'price': 9999,
+                'images': ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800'],
+                'category': 'Category 1'
             },
             {
-                'name': 'Белые розы "Нежность"',
-                'description': 'Букет из 11 белых роз',
-                'price': 280000,
-                'images': ['https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=800'],
-                'category': 'Розы'
+                'name': 'Product Name 2',
+                'description': 'Another product with a detailed description',
+                'price': 14999,
+                'images': ['https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800'],
+                'category': 'Category 1'
             },
             {
-                'name': 'Розовые розы "Романтика"',
-                'description': 'Букет из 21 розовой розы',
-                'price': 450000,
-                'images': ['https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800'],
-                'category': 'Розы'
+                'name': 'Product Name 3',
+                'description': 'Premium product with extended features',
+                'price': 29999,
+                'images': ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=800'],
+                'category': 'Category 1'
             },
-            # Тюльпаны
+            # Category 2
             {
-                'name': 'Тюльпаны "Весна"',
-                'description': 'Яркий букет из 25 разноцветных тюльпанов',
-                'price': 230000,
-                'images': ['https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800'],
-                'category': 'Тюльпаны'
-            },
-            {
-                'name': 'Красные тюльпаны',
-                'description': 'Букет из 15 красных тюльпанов',
-                'price': 190000,
-                'images': ['https://images.unsplash.com/photo-1520763185298-1b434c919102?w=800'],
-                'category': 'Тюльпаны'
-            },
-            # Пионы
-            {
-                'name': 'Пионы "Роскошь"',
-                'description': 'Букет из 7 крупных пионов',
-                'price': 400000,
-                'images': ['https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800'],
-                'category': 'Пионы'
+                'name': 'Product Name 4',
+                'description': 'Quality product for everyday use',
+                'price': 7999,
+                'images': ['https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800'],
+                'category': 'Category 2'
             },
             {
-                'name': 'Белые пионы',
-                'description': 'Букет из 5 белых пионов',
-                'price': 350000,
-                'images': ['https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=800'],
-                'category': 'Пионы'
+                'name': 'Product Name 5',
+                'description': 'Popular item with great reviews',
+                'price': 12999,
+                'images': ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'],
+                'category': 'Category 2'
             },
-            # Букеты
+            # Category 3
             {
-                'name': 'Букет "Летний день"',
-                'description': 'Яркий микс полевых цветов',
-                'price': 250000,
-                'images': ['https://images.unsplash.com/photo-1487070183336-b863922373d4?w=800'],
-                'category': 'Букеты'
-            },
-            {
-                'name': 'Букет "Нежность"',
-                'description': 'Романтичный букет в пастельных тонах',
-                'price': 340000,
-                'images': ['https://images.unsplash.com/photo-1535288262947-259331d73d4f?w=800'],
-                'category': 'Букеты'
+                'name': 'Product Name 6',
+                'description': 'Exclusive limited edition product',
+                'price': 39999,
+                'images': ['https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800'],
+                'category': 'Category 3'
             },
             {
-                'name': 'Букет "Премиум"',
-                'description': 'Роскошная композиция из роз и пионов',
-                'price': 550000,
-                'images': ['https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800'],
-                'category': 'Букеты'
+                'name': 'Product Name 7',
+                'description': 'Stylish design with modern features',
+                'price': 19999,
+                'images': ['https://images.unsplash.com/photo-1525328437458-0c4d4db7cab4?w=800'],
+                'category': 'Category 3'
+            },
+            # Category 4
+            {
+                'name': 'Product Name 8',
+                'description': 'Best value product in this category',
+                'price': 8999,
+                'images': ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800'],
+                'category': 'Category 4'
+            },
+            {
+                'name': 'Product Name 9',
+                'description': 'Deluxe product with premium quality',
+                'price': 24999,
+                'images': ['https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800'],
+                'category': 'Category 4'
+            },
+            {
+                'name': 'Product Name 10',
+                'description': 'Ultimate choice for demanding customers',
+                'price': 49999,
+                'images': ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800'],
+                'category': 'Category 4'
             },
         ]
         
@@ -215,13 +215,13 @@ def seed_database():
                 )
         
         conn.commit()
-        print(f"Добавлено {len(products)} товаров")
+        print(f"Added {len(products)} products")
     else:
-        print(f"Товары уже существуют ({product_count['count']} шт.)")
+        print(f"Products already exist ({product_count['count']} items)")
     
     cur.close()
     conn.close()
-    print("Готово!")
+    print("Done!")
 
 if __name__ == '__main__':
     seed_database()

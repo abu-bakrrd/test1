@@ -1,33 +1,33 @@
 {
-  "shopName": "Flowery Bloom",
-  "description": "Интернет-магазин цветов и открыток",
+  "shopName": "Shop Name",
+  "description": "Shop Description",
   "logo": "/config/logo.svg",
   "currency": {
-    "symbol": "₽",
-    "code": "RUB",
-    "position": "after"
+    "symbol": "$",
+    "code": "USD",
+    "position": "before"
   },
-  "managerContact": "@flowery_b1oom",
+  "managerContact": "@shop_manager",
   "categories": [
     {
-      "id": "roses",
-      "name": "Розы",
-      "icon": "🌹"
+      "id": "category-1",
+      "name": "Category 1",
+      "icon": "📦"
     },
     {
-      "id": "tulips",
-      "name": "Тюльпаны",
-      "icon": "🌷"
+      "id": "category-2",
+      "name": "Category 2",
+      "icon": "🏷️"
     },
     {
-      "id": "bouquets",
-      "name": "Букеты",
-      "icon": "💐"
+      "id": "category-3",
+      "name": "Category 3",
+      "icon": "✨"
     },
     {
-      "id": "cards",
-      "name": "Открытки",
-      "icon": "💌"
+      "id": "category-4",
+      "name": "Category 4",
+      "icon": "🎁"
     }
   ],
   "colorScheme": {
@@ -35,37 +35,37 @@
     "foreground": "#1A1A1A",
     "card": "#FFFFFF",
     "cardForeground": "#1A1A1A",
-    "primary": "#EADCF0",
+    "primary": "#E5E7EB",
     "primaryForeground": "#1A1A1A",
     "secondary": "#F5F5F5",
     "secondaryForeground": "#1A1A1A",
     "muted": "#F5F5F5",
     "mutedForeground": "#737373",
-    "accent": "#EADCF0",
+    "accent": "#E5E7EB",
     "accentForeground": "#1A1A1A",
     "border": "#E5E5E5",
     "input": "#E5E5E5",
-    "ring": "#EADCF0"
+    "ring": "#E5E7EB"
   },
   "sortOptions": [
     {
       "id": "new",
-      "label": "Новинки",
+      "label": "New Items",
       "emoji": "✨"
     },
     {
       "id": "price_asc",
-      "label": "Сначала дешевые",
+      "label": "Price: Low to High",
       "emoji": "💰"
     },
     {
       "id": "price_desc",
-      "label": "Сначала дорогие",
+      "label": "Price: High to Low",
       "emoji": "💎"
     },
     {
       "id": "popular",
-      "label": "Популярные",
+      "label": "Popular",
       "emoji": "🔥"
     }
   ],
@@ -76,12 +76,12 @@
     "showPriceFilter": true
   },
   "texts": {
-    "addToCart": "В корзину",
-    "addedToCart": "Добавлено",
-    "checkout": "Оформить заказ",
-    "total": "Итого",
-    "emptyCart": "Корзина пуста",
-    "emptyFavorites": "Нет избранных товаров",
-    "loading": "Загрузка..."
+    "addToCart": "Add to Cart",
+    "addedToCart": "Added to Cart",
+    "checkout": "Checkout",
+    "total": "Total",
+    "emptyCart": "Cart is Empty",
+    "emptyFavorites": "No Favorites",
+    "loading": "Loading..."
   }
 }
