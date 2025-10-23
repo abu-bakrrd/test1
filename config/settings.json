@@ -62,17 +62,17 @@
     {
       "id": "new",
       "label": "Новое",
-      "emoji": ""
+      "emoji": "f"
     },
     {
       "id": "cheper",
       "label": "Дешевые",
-      "emoji": ""
+      "emoji": "а"
     },
     {
       "id": "expencive",
       "label": "Дороже",
-      "emoji": ""
+      "emoji": "а"
     },
   ],
   "ui": {
