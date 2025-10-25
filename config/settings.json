@@ -1,33 +1,31 @@
 {
-  "shopName": "Shop Name",
-  "description": "Shop Description",
+  "shopName": "Мой Магазин",
+  "description": "Описание магазина на русском",
   "logo": "/config/logo.svg",
   "currency": {
-    "symbol": "$",
-    "code": "USD",
-    "position": "before"
+    "symbol": "₽",
+    "code": "RUB",
+    "position": "after"
   },
-  "managerContact": "@shop_manager",
+  "managerContact": "@manager_shop",
   "categories": [
     {
       "id": "category-1",
-      "name": "Category 1",
-      "icon": "📦"
+      "name": "Электроника",
+      "icon": "📱"
     },
     {
       "id": "category-2",
-      "name": "Category 2",
-      "icon": "🏷️"
+      "name": "Одежда"
     },
     {
       "id": "category-3",
-      "name": "Category 3",
-      "icon": "✨"
+      "name": "Товары для дома",
+      "icon": "🏠"
     },
     {
       "id": "category-4",
-      "name": "Category 4",
-      "icon": "🎁"
+      "name": "Книги"
     }
   ],
   "colorScheme": {
@@ -50,23 +48,21 @@
   "sortOptions": [
     {
       "id": "new",
-      "label": "New Items",
+      "label": "Новые",
       "emoji": "✨"
     },
     {
       "id": "price_asc",
-      "label": "Price: Low to High",
-      "emoji": "💰"
+      "label": "Дешевле"
     },
     {
       "id": "price_desc",
-      "label": "Price: High to Low",
+      "label": "Дороже",
       "emoji": "💎"
     },
     {
       "id": "popular",
-      "label": "Popular",
-      "emoji": "🔥"
+      "label": "Популярные"
     }
   ],
   "ui": {
@@ -76,12 +72,12 @@
     "showPriceFilter": true
   },
   "texts": {
-    "addToCart": "Add to Cart",
-    "addedToCart": "Added to Cart",
-    "checkout": "Checkout",
-    "total": "Total",
-    "emptyCart": "Cart is Empty",
-    "emptyFavorites": "No Favorites",
-    "loading": "Loading..."
+    "addToCart": "Добавить в корзину",
+    "addedToCart": "Добавлено в корзину",
+    "checkout": "Оформить заказ",
+    "total": "Итого",
+    "emptyCart": "Корзина пуста",
+    "emptyFavorites": "Нет избранных товаров",
+    "loading": "Загрузка..."
   }
 }
