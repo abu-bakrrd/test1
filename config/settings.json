@@ -1,32 +1,33 @@
 {
-  "shopName": "Мой Магазин",
-  "description": "Описание магазина на русском",
+  "shopName": "Monvoir",
+  "description": "Будь в стиле. Будь с MONVOIR.",
   "logo": "/config/logo.svg",
   "currency": {
-    "symbol": "₽",
-    "code": "RUB",
+    "symbol": "UZS",
+    "code": "UZS",
     "position": "after"
   },
-  "managerContact": "@manager_shop",
+  "managerContact": "@gayupov_a",
   "categories": [
     {
       "id": "category-1",
-      "name": "Электроника",
-      "icon": "📱"
+      "name": "Головной убор",
     },
     {
       "id": "category-2",
-      "name": "Одежда"
+      "name": "Верхняя одежда"
     },
     {
       "id": "category-3",
-      "name": "Товары для дома",
-      "icon": "🏠"
+      "name": "Нижняя одежда",
     },
     {
       "id": "category-4",
-      "name": "Книги"
-    }
+      "name": "Обувь"
+    }, 
+    {
+      "id": "category-5",
+      "name": "Образ"
   ],
   "colorScheme": {
     "background": "#FEFEFE",
@@ -35,7 +36,7 @@
     "cardForeground": "#1A1A1A",
     "primary": "#E5E7EB",
     "primaryForeground": "#1A1A1A",
-    "secondary": "#F5F5F5",
+    "secondary": "#e2bc54",
     "secondaryForeground": "#1A1A1A",
     "muted": "#F5F5F5",
     "mutedForeground": "#737373",
@@ -49,7 +50,6 @@
     {
       "id": "new",
       "label": "Новые",
-      "emoji": "✨"
     },
     {
       "id": "price_asc",
@@ -58,12 +58,7 @@
     {
       "id": "price_desc",
       "label": "Дороже",
-      "emoji": "💎"
     },
-    {
-      "id": "popular",
-      "label": "Популярные"
-    }
   ],
   "ui": {
     "maxWidth": "420px",
