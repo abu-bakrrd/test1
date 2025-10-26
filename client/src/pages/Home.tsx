@@ -42,6 +42,7 @@ export default function Home({
   const [selectedSort, setSelectedSort] = useState("new");
   const [priceFrom, setPriceFrom] = useState("");
   const [priceTo, setPriceTo] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Get categories from config
   const { config } = useConfig();
@@ -57,6 +58,7 @@ export default function Home({
     setSelectedSort("new");
     setPriceFrom("");
     setPriceTo("");
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -65,6 +67,14 @@ export default function Home({
   // Apply filtering and sorting with useMemo for performance
   const { filteredProducts, totalPages, displayedProducts } = useMemo(() => {
     let filtered = [...products];
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        product => product.name.toLowerCase().includes(query)
+      );
+    }
     
     // Filter by category
     if (selectedCategory !== "all") {
@@ -108,7 +118,7 @@ export default function Home({
       totalPages: pages,
       displayedProducts: displayed
     };
-  }, [products, selectedCategory, priceFrom, priceTo, selectedSort, currentPage]);
+  }, [products, searchQuery, selectedCategory, priceFrom, priceTo, selectedSort, currentPage]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -125,10 +135,12 @@ export default function Home({
         selectedSort={selectedSort}
         priceFrom={priceFrom}
         priceTo={priceTo}
+        searchQuery={searchQuery}
         onCategoryChange={setSelectedCategory}
         onSortChange={setSelectedSort}
         onPriceFromChange={setPriceFrom}
         onPriceToChange={setPriceTo}
+        onSearchChange={setSearchQuery}
         onReset={handleResetFilters}
       />
 
