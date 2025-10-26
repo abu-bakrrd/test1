@@ -349,8 +349,12 @@ def send_telegram_notification(user_info, cart_items, total):
     bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
     
+    print(f"🔔 Attempting to send Telegram notification...")
+    print(f"Bot token exists: {bool(bot_token)}")
+    print(f"Chat ID exists: {bool(chat_id)}")
+    
     if not bot_token or not chat_id:
-        print("Telegram credentials not configured")
+        print("❌ Telegram credentials not configured")
         return False
     
     # Format the order message with detailed information
@@ -417,12 +421,17 @@ def send_telegram_notification(user_info, cart_items, total):
     }
     
     try:
+        print(f"📤 Sending message to Telegram...")
+        print(f"Message preview: {message[:100]}...")
         response = requests.post(url, json=payload, timeout=10)
-        if response.status_code != 200:
-            print(f"Telegram API error: {response.text}")
-        return response.status_code == 200
+        if response.status_code == 200:
+            print(f"✅ Telegram notification sent successfully!")
+            return True
+        else:
+            print(f"❌ Telegram API error (status {response.status_code}): {response.text}")
+            return False
     except Exception as e:
-        print(f"Failed to send Telegram notification: {e}")
+        print(f"❌ Failed to send Telegram notification: {e}")
         return False
 
 # Order endpoint
@@ -434,15 +443,31 @@ def create_order():
         cart_items = data.get('items', [])
         total = data.get('total', 0)
         
+        print(f"\n{'='*50}")
+        print(f"📦 NEW ORDER REQUEST")
+        print(f"{'='*50}")
+        print(f"User ID: {user_id}")
+        print(f"Items count: {len(cart_items)}")
+        print(f"Total: {total}")
+        print(f"Items: {cart_items}")
+        
         # Get user info
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute('SELECT * FROM users WHERE id = %s', (user_id,))
         user_info = cur.fetchone()
         
-        # Send Telegram notification
-        if user_info:
-            send_telegram_notification(user_info, cart_items, total)
+        if not user_info:
+            print(f"⚠️ User not found in database: {user_id}")
+            print(f"❌ Cannot send notification - user not found")
+        else:
+            print(f"✅ User found: {user_info}")
+            # Send Telegram notification
+            notification_sent = send_telegram_notification(user_info, cart_items, total)
+            if notification_sent:
+                print(f"✅ Order notification sent successfully")
+            else:
+                print(f"⚠️ Order notification failed to send")
         
         # Clear the cart after order
         cur.execute('DELETE FROM cart WHERE user_id = %s', (user_id,))
@@ -450,8 +475,13 @@ def create_order():
         cur.close()
         conn.close()
         
+        print(f"{'='*50}\n")
+        
         return jsonify({'message': 'Order created successfully'}), 201
     except Exception as e:
+        print(f"❌ ERROR creating order: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 # ============================================================

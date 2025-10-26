@@ -36,14 +36,24 @@ export default function Cart({
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const orderItems = items.map((item) => ({
+    name: item.name,
+    quantity: item.quantity,
+    price: item.price,
+  }));
+
   const handleCheckout = () => {
     setIsModalOpen(true);
   };
 
   const handleOrderComplete = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.error('User ID not available');
+      return;
+    }
 
     try {
+      console.log('Sending order:', { user_id: user.id, items: orderItems, total });
       await apiRequest('/api/orders', {
         method: 'POST',
         body: JSON.stringify({
@@ -52,18 +62,13 @@ export default function Cart({
           total: total,
         }),
       });
+      console.log('Order sent successfully');
       onClearCart();
     } catch (error) {
       console.error('Failed to create order:', error);
       onClearCart();
     }
   };
-
-  const orderItems = items.map((item) => ({
-    name: item.name,
-    quantity: item.quantity,
-    price: item.price * item.quantity,
-  }));
 
   return (
     <div className="min-h-screen bg-background">
