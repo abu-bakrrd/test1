@@ -371,26 +371,25 @@ def send_telegram_notification(user_info, cart_items, total):
     
     # Start building message
     message = "🔔 *НОВЫЙ ЗАКАЗ*\n"
-    message += "━━━━━━━━━━━━━━━━━━━━\n\n"
+    message += "========================\n\n"
     
     # User information section
     message += "👤 *ИНФОРМАЦИЯ О КЛИЕНТЕ*\n"
-    message += f"• ФИО: *{full_name}*\n"
+    message += f"ФИО: *{full_name}*\n"
     
     if username:
-        message += f"• Username: @{username}\n"
+        message += f"Username: @{username}\n"
     
     if telegram_id:
-        message += f"• Telegram ID: `{telegram_id}`\n"
-        message += f"• Профиль: [Открыть](tg://user?id={telegram_id})\n"
+        message += f"Telegram ID: {telegram_id}\n"
     
-    message += f"• ID пользователя: `{user_id}`\n"
-    message += f"• Дата заказа: {order_time}\n\n"
+    message += f"ID пользователя: {user_id}\n"
+    message += f"Дата заказа: {order_time}\n\n"
     
     # Order details section
     message += "📦 *ДЕТАЛИ ЗАКАЗА*\n"
-    message += f"• Всего позиций: {len(cart_items)} шт.\n"
-    message += f"• Общее количество: {total_items} ед.\n\n"
+    message += f"Всего позиций: {len(cart_items)} шт.\n"
+    message += f"Общее количество: {total_items} ед.\n\n"
     
     # Items list
     message += "🛒 *СОСТАВ ЗАКАЗА*\n"
@@ -401,25 +400,26 @@ def send_telegram_notification(user_info, cart_items, total):
         item_total = item_price * item_quantity
         
         message += f"{idx}. *{item_name}*\n"
-        message += f"   Цена: {item_price:,} сум × {item_quantity} шт.\n"
+        message += f"   Цена: {item_price:,} сум x {item_quantity} шт.\n"
         message += f"   Сумма: *{item_total:,} сум*\n\n"
     
     # Total section
-    message += "━━━━━━━━━━━━━━━━━━━━\n"
+    message += "========================\n"
     message += f"💰 *ИТОГО К ОПЛАТЕ: {total:,} сум*\n"
-    message += "━━━━━━━━━━━━━━━━━━━━"
+    message += "========================"
     
     # Send message via Telegram Bot API
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
         'chat_id': chat_id,
         'text': message,
-        'parse_mode': 'Markdown',
-        'disable_web_page_preview': True
+        'parse_mode': 'Markdown'
     }
     
     try:
         response = requests.post(url, json=payload, timeout=10)
+        if response.status_code != 200:
+            print(f"Telegram API error: {response.text}")
         return response.status_code == 200
     except Exception as e:
         print(f"Failed to send Telegram notification: {e}")
