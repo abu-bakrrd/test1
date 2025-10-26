@@ -369,47 +369,53 @@ def send_telegram_notification(user_info, cart_items, total):
     if not full_name:
         full_name = username or 'Неизвестный'
     
+    # HTML escape helper function
+    def escape_html(text):
+        if text is None:
+            return ''
+        return str(text).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    
     # Calculate order details
     total_items = sum(item['quantity'] for item in cart_items)
     order_time = datetime.now().strftime('%d.%m.%Y в %H:%M')
     
-    # Start building message
-    message = "🔔 *НОВЫЙ ЗАКАЗ*\n"
+    # Start building message with HTML formatting
+    message = "🔔 <b>НОВЫЙ ЗАКАЗ</b>\n"
     message += "========================\n\n"
     
     # User information section
-    message += "👤 *ИНФОРМАЦИЯ О КЛИЕНТЕ*\n"
-    message += f"ФИО: *{full_name}*\n"
+    message += "👤 <b>ИНФОРМАЦИЯ О КЛИЕНТЕ</b>\n"
+    message += f"ФИО: <b>{escape_html(full_name)}</b>\n"
     
     if username:
-        message += f"Username: @{username}\n"
+        message += f"Username: @{escape_html(username)}\n"
     
     if telegram_id:
         message += f"Telegram ID: {telegram_id}\n"
     
-    message += f"ID пользователя: {user_id}\n"
+    message += f"ID пользователя: {escape_html(user_id)}\n"
     message += f"Дата заказа: {order_time}\n\n"
     
     # Order details section
-    message += "📦 *ДЕТАЛИ ЗАКАЗА*\n"
+    message += "📦 <b>ДЕТАЛИ ЗАКАЗА</b>\n"
     message += f"Всего позиций: {len(cart_items)} шт.\n"
     message += f"Общее количество: {total_items} ед.\n\n"
     
     # Items list
-    message += "🛒 *СОСТАВ ЗАКАЗА*\n"
+    message += "🛒 <b>СОСТАВ ЗАКАЗА</b>\n"
     for idx, item in enumerate(cart_items, 1):
-        item_name = item['name']
+        item_name = escape_html(item['name'])
         item_quantity = item['quantity']
         item_price = item['price']
         item_total = item_price * item_quantity
         
-        message += f"{idx}. *{item_name}*\n"
+        message += f"{idx}. <b>{item_name}</b>\n"
         message += f"   Цена: {item_price:,} сум x {item_quantity} шт.\n"
-        message += f"   Сумма: *{item_total:,} сум*\n\n"
+        message += f"   Сумма: <b>{item_total:,} сум</b>\n\n"
     
     # Total section
     message += "========================\n"
-    message += f"💰 *ИТОГО К ОПЛАТЕ: {total:,} сум*\n"
+    message += f"💰 <b>ИТОГО К ОПЛАТЕ: {total:,} сум</b>\n"
     message += "========================"
     
     # Send message via Telegram Bot API
@@ -417,7 +423,7 @@ def send_telegram_notification(user_info, cart_items, total):
     payload = {
         'chat_id': chat_id,
         'text': message,
-        'parse_mode': 'Markdown'
+        'parse_mode': 'HTML'
     }
     
     try:
