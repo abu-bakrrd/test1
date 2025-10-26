@@ -353,28 +353,69 @@ def send_telegram_notification(user_info, cart_items, total):
         print("Telegram credentials not configured")
         return False
     
-    # Format the order message
-    user_name = user_info.get('first_name', '') + ' ' + user_info.get('last_name', '')
-    user_name = user_name.strip() or user_info.get('username', 'Неизвестный')
-    telegram_id = user_info.get('telegram_id', 'N/A')
+    # Format the order message with detailed information
+    first_name = user_info.get('first_name', '')
+    last_name = user_info.get('last_name', '')
+    username = user_info.get('username', '')
+    telegram_id = user_info.get('telegram_id')
+    user_id = user_info.get('id', '')
     
-    message = f"🛍 *Новый заказ!*\n\n"
-    message += f"👤 *Клиент:* {user_name}\n"
-    message += f"🆔 *Telegram ID:* {telegram_id}\n"
-    message += f"📅 *Дата:* {datetime.now().strftime('%d.%m.%Y %H:%M')}\n\n"
-    message += f"📦 *Товары:*\n"
+    # Build full name
+    full_name = f"{first_name} {last_name}".strip()
+    if not full_name:
+        full_name = username or 'Неизвестный'
     
-    for item in cart_items:
-        message += f"• {item['name']} — {item['quantity']} шт. — {item['price']:,} сум\n"
+    # Calculate order details
+    total_items = sum(item['quantity'] for item in cart_items)
+    order_time = datetime.now().strftime('%d.%m.%Y в %H:%M')
     
-    message += f"\n💰 *Итого:* {total:,} сум"
+    # Start building message
+    message = "🔔 *НОВЫЙ ЗАКАЗ*\n"
+    message += "━━━━━━━━━━━━━━━━━━━━\n\n"
+    
+    # User information section
+    message += "👤 *ИНФОРМАЦИЯ О КЛИЕНТЕ*\n"
+    message += f"• ФИО: *{full_name}*\n"
+    
+    if username:
+        message += f"• Username: @{username}\n"
+    
+    if telegram_id:
+        message += f"• Telegram ID: `{telegram_id}`\n"
+        message += f"• Профиль: [Открыть](tg://user?id={telegram_id})\n"
+    
+    message += f"• ID пользователя: `{user_id}`\n"
+    message += f"• Дата заказа: {order_time}\n\n"
+    
+    # Order details section
+    message += "📦 *ДЕТАЛИ ЗАКАЗА*\n"
+    message += f"• Всего позиций: {len(cart_items)} шт.\n"
+    message += f"• Общее количество: {total_items} ед.\n\n"
+    
+    # Items list
+    message += "🛒 *СОСТАВ ЗАКАЗА*\n"
+    for idx, item in enumerate(cart_items, 1):
+        item_name = item['name']
+        item_quantity = item['quantity']
+        item_price = item['price']
+        item_total = item_price * item_quantity
+        
+        message += f"{idx}. *{item_name}*\n"
+        message += f"   Цена: {item_price:,} сум × {item_quantity} шт.\n"
+        message += f"   Сумма: *{item_total:,} сум*\n\n"
+    
+    # Total section
+    message += "━━━━━━━━━━━━━━━━━━━━\n"
+    message += f"💰 *ИТОГО К ОПЛАТЕ: {total:,} сум*\n"
+    message += "━━━━━━━━━━━━━━━━━━━━"
     
     # Send message via Telegram Bot API
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
         'chat_id': chat_id,
         'text': message,
-        'parse_mode': 'Markdown'
+        'parse_mode': 'Markdown',
+        'disable_web_page_preview': True
     }
     
     try:
