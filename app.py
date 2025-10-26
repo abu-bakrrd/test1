@@ -96,8 +96,6 @@ def get_config():
         import json
         from flask import Response
         config_path = os.path.join(os.path.dirname(__file__), 'config', 'settings.json')
-        print(f"Config path: {config_path}")
-        print(f"File exists: {os.path.exists(config_path)}")
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
         return Response(
@@ -105,9 +103,6 @@ def get_config():
             mimetype='application/json; charset=utf-8'
         )
     except Exception as e:
-        print(f"Error in get_config: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/config/<path:filename>')

@@ -11,7 +11,7 @@
   "categories": [
     {
       "id": "category-1",
-      "name": "Головной убор",
+      "name": "Головной убор"
     },
     {
       "id": "category-2",
@@ -19,12 +19,12 @@
     },
     {
       "id": "category-3",
-      "name": "Нижняя одежда",
+      "name": "Нижняя одежда"
     },
     {
       "id": "category-4",
       "name": "Обувь"
-    }, 
+    },
     {
       "id": "category-5",
       "name": "Образ"
@@ -50,7 +50,7 @@
   "sortOptions": [
     {
       "id": "new",
-      "label": "Новые",
+      "label": "Новые"
     },
     {
       "id": "price_asc",
@@ -58,8 +58,8 @@
     },
     {
       "id": "price_desc",
-      "label": "Дороже",
-    },
+      "label": "Дороже"
+    }
   ],
   "ui": {
     "maxWidth": "420px",
