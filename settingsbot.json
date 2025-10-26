@@ -1,0 +1,6 @@
+{
+  "authorized_users": [
+    
+  ],
+  "admin_notes": "Добавьте ваш Telegram ID в массив authorized_users. Пример: [123456789, 987654321]"
+}
