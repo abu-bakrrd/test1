@@ -55,12 +55,17 @@ print_step "Обновление системы и установка пакет
 apt update && apt upgrade -y
 
 print_step "Установка необходимых пакетов..."
-apt install -y python3 python3-pip python3-venv nodejs npm postgresql postgresql-contrib nginx git curl
+apt install -y python3 python3-pip python3-venv postgresql postgresql-contrib nginx git curl
 
-# Настройка Node.js (установка последней LTS версии)
-print_step "Установка Node.js LTS..."
-curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-apt install -y nodejs
+# Node.js уже должен быть установлен (версия 20 от NodeSource)
+# Если нет - установим
+if ! command -v node &> /dev/null; then
+    print_step "Установка Node.js LTS..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt install -y nodejs
+else
+    print_step "Node.js уже установлен: $(node --version)"
+fi
 
 # Создание пользователя приложения
 print_step "Создание пользователя приложения..."
