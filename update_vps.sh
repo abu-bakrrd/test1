@@ -92,6 +92,21 @@ pip install --upgrade pip
 pip install -r requirements.txt
 EOF
 
+# Настройка прав доступа для Nginx
+print_step "Обновление прав доступа для Nginx..."
+chmod 755 /home/$APP_USER
+chmod 755 $APP_DIR
+
+if [ -d "$APP_DIR/dist" ]; then
+    chown -R $APP_USER:www-data $APP_DIR/dist
+    chmod -R 755 $APP_DIR/dist
+fi
+
+if [ -d "$APP_DIR/config" ]; then
+    chown -R $APP_USER:www-data $APP_DIR/config
+    chmod -R 755 $APP_DIR/config
+fi
+
 # Перезапуск приложения
 print_step "Перезапуск приложения..."
 systemctl restart monvoir-app

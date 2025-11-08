@@ -76,6 +76,10 @@ else
     print_step "Пользователь $APP_USER создан"
 fi
 
+# Добавление пользователя в группу www-data для работы с Nginx
+usermod -a -G www-data $APP_USER
+print_step "Пользователь $APP_USER добавлен в группу www-data"
+
 # Настройка PostgreSQL
 print_step "Настройка PostgreSQL..."
 sudo -u postgres psql <<EOF
@@ -145,6 +149,26 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 EOF
+
+# Настройка прав доступа для Nginx
+print_step "Настройка прав доступа для Nginx..."
+# Nginx должен иметь доступ к родительским директориям
+chmod 755 /home/$APP_USER
+chmod 755 $APP_DIR
+
+# Права доступа к собранному фронтенду
+if [ -d "$APP_DIR/dist" ]; then
+    chown -R $APP_USER:www-data $APP_DIR/dist
+    chmod -R 755 $APP_DIR/dist
+    print_step "Права на dist/ настроены"
+fi
+
+# Права доступа к конфигурации (для /config endpoint)
+if [ -d "$APP_DIR/config" ]; then
+    chown -R $APP_USER:www-data $APP_DIR/config
+    chmod -R 755 $APP_DIR/config
+    print_step "Права на config/ настроены"
+fi
 
 # Создание systemd сервиса
 print_step "Создание systemd сервиса..."

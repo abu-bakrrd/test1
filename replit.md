@@ -33,6 +33,45 @@ This is a **universal template** for creating e-commerce Telegram Mini Apps. The
 - **Static File Serving**: Configured Flask to serve pre-built React frontend from `dist/public/`
 - **Telegram Mini App Database Integration**: Updated database schema for full Telegram authentication support
 
+### November 8, 2025 - VPS Deployment Improvements
+- **Auto-fix Permissions**: `deploy_vps.sh` now automatically configures Nginx permissions
+- **New Script**: `fix_permissions.sh` for quick resolution of 403 Forbidden errors
+- **Updated Scripts**: All deployment scripts now handle permissions correctly
+- **Enhanced Documentation**: Added comprehensive VPS deployment guides in Russian
+
+## 🚀 VPS Deployment Quick Start
+
+### Deploy in 2 Commands
+
+```bash
+# 1. Clone repository on VPS
+git clone <your-repo> /opt/monvoir-deploy
+cd /opt/monvoir-deploy
+
+# 2. Run auto-deployment
+chmod +x deploy_vps.sh
+sudo ./deploy_vps.sh
+```
+
+**Done!** The script automatically installs PostgreSQL, Nginx, Node.js, builds frontend, and configures everything.
+
+### Available Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `deploy_vps.sh` | Initial deployment (all-in-one) |
+| `update_vps.sh` | Update deployed application |
+| `fix_permissions.sh` | Fix 403 Forbidden errors |
+| `backup_db.sh` | Backup PostgreSQL database |
+| `restore_db.sh` | Restore database from backup |
+
+### VPS Documentation
+
+- 📘 **Quick Start (RU)**: `QUICK_START_RU.md` ⭐
+- 📗 **Full Guide**: `DEPLOY_TO_VPS_README.md`
+- 📕 **Scripts Reference**: `VPS_SCRIPTS_README.md`
+- 📙 **GitHub Deployment**: `DEPLOY_FROM_GITHUB.md`
+
 ## Template Configuration
 
 All shop settings are centralized in `config/settings.json`:

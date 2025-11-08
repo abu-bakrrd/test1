@@ -280,6 +280,48 @@ psql -U monvoir_user -d monvoir_shop -h localhost
 cat /home/monvoir/app/.env
 ```
 
+### Nginx показывает 403 Forbidden для статических файлов (JS/CSS)
+
+**Симптомы:**
+- Белая страница в браузере
+- Ошибки в консоли: `Failed to load resource: 403 (Forbidden)`
+- JS и CSS файлы не загружаются
+
+**Решение (автоматически):**
+
+```bash
+# Используйте скрипт автоматического исправления
+cd /home/monvoir/app
+sudo ./fix_permissions.sh
+```
+
+**Решение (вручную):**
+
+```bash
+# Настроить права на родительские директории
+sudo chmod 755 /home/monvoir
+sudo chmod 755 /home/monvoir/app
+
+# Настроить права на статические файлы
+sudo chown -R monvoir:www-data /home/monvoir/app/dist
+sudo chmod -R 755 /home/monvoir/app/dist
+
+sudo chown -R monvoir:www-data /home/monvoir/app/config
+sudo chmod -R 755 /home/monvoir/app/config
+
+# Перезапустить Nginx
+sudo systemctl restart nginx
+```
+
+**Проверка:**
+
+```bash
+# Проверить, что файлы доступны через Nginx
+curl -I http://localhost/assets/index-*.js
+
+# Должен вернуть 200 OK, а не 403 Forbidden
+```
+
 ### Не хватает места на диске
 
 ```bash
@@ -350,6 +392,7 @@ sudo tail -f /var/log/nginx/monvoir_access.log | awk '{print $NF}'
 | Обновление | `sudo ./update_vps.sh` |
 | Резервная копия | `sudo ./backup_db.sh` |
 | Восстановление | `sudo ./restore_db.sh` |
+| Исправление прав | `sudo ./fix_permissions.sh` |
 
 ---
 

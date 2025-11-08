@@ -101,6 +101,9 @@ sudo ./backup_db.sh
 
 # Восстановить из резервной копии
 sudo ./restore_db.sh
+
+# Исправить права доступа (если 403 ошибки)
+sudo ./fix_permissions.sh
 ```
 
 ---
@@ -147,6 +150,7 @@ sudo ./update_vps.sh
 ✅ Создает базу данных  
 ✅ Устанавливает Node.js и Python  
 ✅ Собирает фронтенд  
+✅ Настраивает права доступа для Nginx  
 ✅ Настраивает systemd сервис  
 ✅ Настраивает Nginx  
 ✅ Настраивает Firewall  
@@ -167,6 +171,18 @@ systemctl status nginx
 journalctl -u monvoir-app -n 50
 tail -f /var/log/nginx/monvoir_error.log
 ```
+
+### Белая страница / Ошибки 403 Forbidden
+
+Если видите белую страницу и ошибки в консоли браузера (F12):
+
+```bash
+# Автоматическое исправление прав доступа
+cd /home/monvoir/app
+sudo ./fix_permissions.sh
+```
+
+Затем обновите страницу в браузере!
 
 ### База данных не подключается
 
