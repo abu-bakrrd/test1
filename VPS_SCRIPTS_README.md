@@ -37,7 +37,7 @@ sudo ./deploy_vps.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./update_vps.sh
 ```
 
@@ -60,7 +60,7 @@ sudo ./update_vps.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./fix_permissions.sh
 ```
 
@@ -83,14 +83,14 @@ sudo ./fix_permissions.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./backup_db.sh
 ```
 
 **Что делает:**
 - ✅ Создает резервную копию базы данных
 - ✅ Сжимает резервную копию (gzip)
-- ✅ Сохраняет в `/home/monvoir/app/backups/`
+- ✅ Сохраняет в `/home/shopapp/app/backups/`
 - ✅ Автоматически удаляет старые копии (оставляет последние 30)
 
 **Когда использовать:**
@@ -106,7 +106,7 @@ sudo ./backup_db.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./restore_db.sh
 ```
 
@@ -130,7 +130,7 @@ sudo ./restore_db.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./setup_domain.sh
 ```
 
@@ -154,7 +154,7 @@ sudo ./setup_domain.sh
 
 **Использование:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./setup_ssl.sh
 ```
 
@@ -177,12 +177,12 @@ sudo ./setup_ssl.sh
 | Задача | Команда |
 |--------|---------|
 | Первая установка | `sudo ./deploy_vps.sh` |
-| Обновление кода | `cd /home/monvoir/app && sudo ./update_vps.sh` |
-| Исправить права | `cd /home/monvoir/app && sudo ./fix_permissions.sh` |
-| Настроить домен | `cd /home/monvoir/app && sudo ./setup_domain.sh` |
-| Установить SSL | `cd /home/monvoir/app && sudo ./setup_ssl.sh` |
-| Бэкап БД | `cd /home/monvoir/app && sudo ./backup_db.sh` |
-| Восстановить БД | `cd /home/monvoir/app && sudo ./restore_db.sh` |
+| Обновление кода | `cd /home/shopapp/app && sudo ./update_vps.sh` |
+| Исправить права | `cd /home/shopapp/app && sudo ./fix_permissions.sh` |
+| Настроить домен | `cd /home/shopapp/app && sudo ./setup_domain.sh` |
+| Установить SSL | `cd /home/shopapp/app && sudo ./setup_ssl.sh` |
+| Бэкап БД | `cd /home/shopapp/app && sudo ./backup_db.sh` |
+| Восстановить БД | `cd /home/shopapp/app && sudo ./restore_db.sh` |
 
 ---
 
@@ -192,19 +192,19 @@ sudo ./setup_ssl.sh
 
 ```bash
 # Статус приложения
-systemctl status monvoir-app
+systemctl status shop-app
 
 # Перезапуск
-systemctl restart monvoir-app
+systemctl restart shop-app
 
 # Остановка
-systemctl stop monvoir-app
+systemctl stop shop-app
 
 # Запуск
-systemctl start monvoir-app
+systemctl start shop-app
 
 # Логи в реальном времени
-journalctl -u monvoir-app -f
+journalctl -u shop-app -f
 ```
 
 ### Управление Nginx
@@ -220,10 +220,10 @@ systemctl restart nginx
 nginx -t
 
 # Логи ошибок
-tail -f /var/log/nginx/monvoir_error.log
+tail -f /var/log/nginx/shop_error.log
 
 # Логи доступа
-tail -f /var/log/nginx/monvoir_access.log
+tail -f /var/log/nginx/shop_access.log
 ```
 
 ---
@@ -234,7 +234,7 @@ tail -f /var/log/nginx/monvoir_access.log
 
 **Решение:**
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./fix_permissions.sh
 ```
 
@@ -243,10 +243,10 @@ sudo ./fix_permissions.sh
 **Решение:**
 ```bash
 # Проверить логи
-journalctl -u monvoir-app -n 100
+journalctl -u shop-app -n 100
 
 # Попробовать запустить вручную
-cd /home/monvoir/app
+cd /home/shopapp/app
 source venv/bin/activate
 python3 app.py
 ```
@@ -259,7 +259,7 @@ python3 app.py
 systemctl status postgresql
 
 # Проверить настройки
-cat /home/monvoir/app/.env
+cat /home/shopapp/app/.env
 ```
 
 ---

@@ -4,19 +4,19 @@
 
 ```bash
 # 1. Подключитесь к VPS
-ssh root@81.162.55.47
+ssh root@YOUR_VPS_IP
 
 # 2. Клонируйте ваш GitHub репозиторий
 cd /opt
-git clone https://github.com/ваш-username/ваш-репозиторий.git monvoir-deploy
+git clone https://github.com/ваш-username/ваш-репозиторий.git shop-deploy
 
 # 3. Запустите автоматическую установку
-cd monvoir-deploy
+cd shop-deploy
 chmod +x deploy_vps.sh
 ./deploy_vps.sh
 
 # 4. Откройте в браузере
-# http://81.162.55.47
+# http://YOUR_VPS_IP
 ```
 
 **Замените:**
@@ -41,11 +41,11 @@ git push
 
 ```bash
 # 3. Подключитесь
-ssh root@81.162.55.47
+ssh root@YOUR_VPS_IP
 
 # 4. Обновите
-cd /home/monvoir/app
-sudo -u monvoir git pull
+cd /home/shopapp/app
+sudo -u shopapp git pull
 sudo ./update_vps.sh
 
 # Готово! Изменения применены
@@ -57,20 +57,20 @@ sudo ./update_vps.sh
 
 ```bash
 # Проверить статус
-systemctl status monvoir-app
+systemctl status shop-app
 
 # Перезапустить
-systemctl restart monvoir-app
+systemctl restart shop-app
 
 # Посмотреть логи
-journalctl -u monvoir-app -f
+journalctl -u shop-app -f
 
 # Резервная копия БД
-cd /home/monvoir/app
+cd /home/shopapp/app
 sudo ./backup_db.sh
 
 # Проверить версию кода
-cd /home/monvoir/app
+cd /home/shopapp/app
 git log --oneline -5
 ```
 
@@ -82,7 +82,7 @@ git log --oneline -5
 
 ```bash
 # На VPS создайте SSH ключ
-ssh-keygen -t ed25519 -C "vps@monvoir"
+ssh-keygen -t ed25519 -C "vps@shop"
 
 # Выведите публичный ключ
 cat ~/.ssh/id_ed25519.pub
@@ -93,7 +93,7 @@ cat ~/.ssh/id_ed25519.pub
 
 Теперь клонируйте через SSH:
 ```bash
-git clone git@github.com:ваш-username/ваш-репозиторий.git monvoir-deploy
+git clone git@github.com:ваш-username/ваш-репозиторий.git shop-deploy
 ```
 
 ---
@@ -103,11 +103,11 @@ git clone git@github.com:ваш-username/ваш-репозиторий.git monvo
 ### Конфликты при git pull
 
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 
 # Сбросить все локальные изменения
-sudo -u monvoir git fetch origin
-sudo -u monvoir git reset --hard origin/main
+sudo -u shopapp git fetch origin
+sudo -u shopapp git reset --hard origin/main
 
 # Обновить
 sudo ./update_vps.sh
@@ -117,10 +117,10 @@ sudo ./update_vps.sh
 
 ```bash
 # Посмотреть логи
-journalctl -u monvoir-app -n 100
+journalctl -u shop-app -n 100
 
 # Проверить статус
-systemctl status monvoir-app
+systemctl status shop-app
 systemctl status nginx
 systemctl status postgresql
 ```
@@ -128,19 +128,19 @@ systemctl status postgresql
 ### Откатить на предыдущую версию
 
 ```bash
-cd /home/monvoir/app
+cd /home/shopapp/app
 
 # Посмотреть историю коммитов
 git log --oneline -10
 
 # Откатиться на нужный коммит (замените abc123 на хеш коммита)
-sudo -u monvoir git checkout abc123
+sudo -u shopapp git checkout abc123
 
 # Обновить
 sudo ./update_vps.sh
 
 # Вернуться на последнюю версию
-sudo -u monvoir git checkout main
+sudo -u shopapp git checkout main
 sudo ./update_vps.sh
 ```
 
@@ -150,7 +150,7 @@ sudo ./update_vps.sh
 
 ```bash
 # Какая версия сейчас на сервере?
-cd /home/monvoir/app
+cd /home/shopapp/app
 git log -1 --pretty=format:"%h - %s (%cr)"
 
 # Какие файлы изменены локально?
@@ -173,13 +173,13 @@ git status
    ↓
 2. git add . && git commit -m "..." && git push
    ↓
-3. ssh root@81.162.55.47
+3. ssh root@YOUR_VPS_IP
    ↓
-4. cd /home/monvoir/app
+4. cd /home/shopapp/app
    ↓
-5. sudo -u monvoir git pull && sudo ./update_vps.sh
+5. sudo -u shopapp git pull && sudo ./update_vps.sh
    ↓
-6. Проверить в браузере: http://81.162.55.47
+6. Проверить в браузере: http://YOUR_VPS_IP
 ```
 
 ---
