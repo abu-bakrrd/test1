@@ -6,23 +6,23 @@
   "categories": [
     {
       "id": "category-1",
-      "name": "Головной убор"
+      "name": "Category 1"
     },
     {
       "id": "category-2",
-      "name": "Верхняя одежда"
+      "name": "Category 2"
     },
     {
       "id": "category-3",
-      "name": "Нижняя одежда"
+      "name": "Category 3"
     },
     {
       "id": "category-4",
-      "name": "Обувь"
+      "name": "Category 4"
     },
     {
       "id": "category-5",
-      "name": "Образ"
+      "name": "Category 5"
     }
   ]
 }
