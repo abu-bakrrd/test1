@@ -25,7 +25,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Параметры
-APP_USER=${APP_USER:-monvoir}
+APP_USER=${APP_USER:-shopapp}
 APP_DIR="/home/$APP_USER/app"
 
 echo "=================================================="

@@ -6,7 +6,7 @@
 set -e
 
 echo "=================================================="
-echo "🚀 Начало развертывания Monvoir Shop на VPS"
+echo "🚀 Начало развертывания Telegram Shop на VPS"
 echo "=================================================="
 
 # Цвета для вывода
@@ -35,14 +35,14 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Запрос параметров
-read -p "Введите имя пользователя для приложения [monvoir]: " APP_USER
-APP_USER=${APP_USER:-monvoir}
+read -p "Введите имя пользователя для приложения [shopapp]: " APP_USER
+APP_USER=${APP_USER:-shopapp}
 
-read -p "Введите имя базы данных [monvoir_shop]: " DB_NAME
-DB_NAME=${DB_NAME:-monvoir_shop}
+read -p "Введите имя базы данных [shop_db]: " DB_NAME
+DB_NAME=${DB_NAME:-shop_db}
 
-read -p "Введите имя пользователя БД [monvoir_user]: " DB_USER
-DB_USER=${DB_USER:-monvoir_user}
+read -p "Введите имя пользователя БД [shop_user]: " DB_USER
+DB_USER=${DB_USER:-shop_user}
 
 read -sp "Введите пароль для БД: " DB_PASSWORD
 echo
@@ -172,9 +172,9 @@ fi
 
 # Создание systemd сервиса
 print_step "Создание systemd сервиса..."
-cat > /etc/systemd/system/monvoir-app.service <<EOF
+cat > /etc/systemd/system/shop-app.service <<EOF
 [Unit]
-Description=Monvoir Shop Flask Application
+Description=Telegram Shop Flask Application
 After=network.target postgresql.service
 
 [Service]
@@ -194,29 +194,29 @@ EOF
 # Запуск сервиса
 print_step "Запуск приложения..."
 systemctl daemon-reload
-systemctl enable monvoir-app
-systemctl start monvoir-app
+systemctl enable shop-app
+systemctl start shop-app
 
 # Проверка статуса
 sleep 3
-if systemctl is-active --quiet monvoir-app; then
+if systemctl is-active --quiet shop-app; then
     print_step "Приложение успешно запущено!"
 else
-    print_error "Ошибка запуска приложения. Проверьте логи: journalctl -u monvoir-app -n 50"
+    print_error "Ошибка запуска приложения. Проверьте логи: journalctl -u shop-app -n 50"
     exit 1
 fi
 
 # Настройка Nginx
 print_step "Настройка Nginx..."
-cat > /etc/nginx/sites-available/monvoir <<EOF
+cat > /etc/nginx/sites-available/shop <<EOF
 server {
     listen 80;
     server_name _;
 
     client_max_body_size 20M;
 
-    access_log /var/log/nginx/monvoir_access.log;
-    error_log /var/log/nginx/monvoir_error.log;
+    access_log /var/log/nginx/shop_access.log;
+    error_log /var/log/nginx/shop_error.log;
 
     location /assets {
         alias $APP_DIR/dist/public/assets;
@@ -245,7 +245,7 @@ server {
 EOF
 
 # Активация конфигурации Nginx
-ln -sf /etc/nginx/sites-available/monvoir /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/shop /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 
 # Проверка конфигурации Nginx
@@ -294,9 +294,9 @@ echo "  - База данных: $DB_NAME"
 echo "  - Порт приложения: $APP_PORT"
 echo ""
 echo "🔧 Полезные команды:"
-echo "  - Проверить статус: systemctl status monvoir-app"
-echo "  - Просмотреть логи: journalctl -u monvoir-app -f"
-echo "  - Перезапустить: systemctl restart monvoir-app"
+echo "  - Проверить статус: systemctl status shop-app"
+echo "  - Просмотреть логи: journalctl -u shop-app -f"
+echo "  - Перезапустить: systemctl restart shop-app"
 echo ""
 echo "📝 Для обновления приложения используйте: ./update_vps.sh"
 echo ""

@@ -19,7 +19,7 @@ print_error() {
 }
 
 # Параметры
-APP_USER=${APP_USER:-monvoir}
+APP_USER=${APP_USER:-shopapp}
 APP_DIR="/home/$APP_USER/app"
 BACKUP_DIR="$APP_DIR/backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

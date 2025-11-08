@@ -24,7 +24,7 @@ print_warning() {
 }
 
 # Параметры
-APP_USER=${APP_USER:-monvoir}
+APP_USER=${APP_USER:-shopapp}
 APP_DIR="/home/$APP_USER/app"
 BACKUP_DIR="$APP_DIR/backups"
 
@@ -84,7 +84,7 @@ print_step "Страховочная копия создана: $SAFETY_BACKUP"
 
 # Остановка приложения
 print_step "Остановка приложения..."
-systemctl stop monvoir-app
+systemctl stop shop-app
 
 # Восстановление базы данных
 print_step "Восстановление базы данных из: $BACKUP_FILE"
@@ -118,12 +118,12 @@ print_step "База данных восстановлена успешно!"
 
 # Запуск приложения
 print_step "Запуск приложения..."
-systemctl start monvoir-app
+systemctl start shop-app
 
 sleep 3
 
 # Проверка статуса
-if systemctl is-active --quiet monvoir-app; then
+if systemctl is-active --quiet shop-app; then
     print_step "✅ Приложение успешно запущено!"
     
     # Удаление старой БД
@@ -141,7 +141,7 @@ DROP DATABASE IF EXISTS $DB_NAME;
 ALTER DATABASE ${DB_NAME}_old RENAME TO $DB_NAME;
 EOF
     
-    systemctl start monvoir-app
+    systemctl start shop-app
     print_error "База данных возвращена к предыдущему состоянию"
     exit 1
 fi

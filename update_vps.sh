@@ -24,11 +24,11 @@ print_warning() {
 }
 
 # Параметры (можно изменить)
-APP_USER=${APP_USER:-monvoir}
+APP_USER=${APP_USER:-shopapp}
 APP_DIR="/home/$APP_USER/app"
 
 echo "=================================================="
-echo "🔄 Обновление Monvoir Shop"
+echo "🔄 Обновление Telegram Shop"
 echo "=================================================="
 
 # Проверка прав
@@ -109,21 +109,21 @@ fi
 
 # Перезапуск приложения
 print_step "Перезапуск приложения..."
-systemctl restart monvoir-app
+systemctl restart shop-app
 
 # Ожидание запуска
 sleep 3
 
 # Проверка статуса
-if systemctl is-active --quiet monvoir-app; then
+if systemctl is-active --quiet shop-app; then
     print_step "✅ Приложение успешно обновлено и перезапущено!"
     
     # Показать последние логи
     print_step "Последние логи приложения:"
-    journalctl -u monvoir-app -n 20 --no-pager
+    journalctl -u shop-app -n 20 --no-pager
 else
     print_error "❌ Ошибка при перезапуске приложения!"
-    print_error "Проверьте логи: journalctl -u monvoir-app -n 50"
+    print_error "Проверьте логи: journalctl -u shop-app -n 50"
     exit 1
 fi
 
