@@ -80,6 +80,46 @@ fi
 read -p "Введите порт для приложения [5000]: " APP_PORT
 APP_PORT=${APP_PORT:-5000}
 
+echo ""
+echo "🤖 НАСТРОЙКА TELEGRAM БОТА"
+echo ""
+echo "Следующие параметры нужны для работы Telegram бота управления товарами:"
+echo ""
+
+read -p "Введите токен Telegram бота (от @BotFather): " TELEGRAM_BOT_TOKEN
+while [ -z "$TELEGRAM_BOT_TOKEN" ]; do
+    print_error "Токен бота не может быть пустым!"
+    read -p "Введите токен Telegram бота (от @BotFather): " TELEGRAM_BOT_TOKEN
+done
+
+read -p "Введите ваш Telegram ID (для доступа к боту): " TELEGRAM_ADMIN_ID
+while [ -z "$TELEGRAM_ADMIN_ID" ]; do
+    print_error "Telegram ID не может быть пустым!"
+    read -p "Введите ваш Telegram ID: " TELEGRAM_ADMIN_ID
+done
+
+read -p "Введите Cloudinary Cloud Name: " CLOUDINARY_CLOUD_NAME
+while [ -z "$CLOUDINARY_CLOUD_NAME" ]; do
+    print_error "Cloudinary Cloud Name не может быть пустым!"
+    read -p "Введите Cloudinary Cloud Name: " CLOUDINARY_CLOUD_NAME
+done
+
+read -p "Введите Cloudinary API Key: " CLOUDINARY_API_KEY
+while [ -z "$CLOUDINARY_API_KEY" ]; do
+    print_error "Cloudinary API Key не может быть пустым!"
+    read -p "Введите Cloudinary API Key: " CLOUDINARY_API_KEY
+done
+
+read -sp "Введите Cloudinary API Secret: " CLOUDINARY_API_SECRET
+echo
+while [ -z "$CLOUDINARY_API_SECRET" ]; do
+    print_error "Cloudinary API Secret не может быть пустым!"
+    read -sp "Введите Cloudinary API Secret: " CLOUDINARY_API_SECRET
+    echo
+done
+
+print_step "Данные Telegram бота сохранены"
+
 # Установка пакетов
 print_step "Обновление системы и установка пакетов..."
 apt update && apt upgrade -y
@@ -191,6 +231,63 @@ EOF
 
 chown $APP_USER:$APP_USER $APP_DIR/.env
 chmod 600 $APP_DIR/.env
+
+# Создание .env файла для Telegram бота
+print_step "Создание файла .env для Telegram бота..."
+cat > $APP_DIR/telegram_bot/.env <<EOF
+DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@localhost:5432/$DB_NAME
+TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
+CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
+EOF
+
+chown $APP_USER:$APP_USER $APP_DIR/telegram_bot/.env
+chmod 600 $APP_DIR/telegram_bot/.env
+print_step "Файл .env для Telegram бота создан"
+
+# Синхронизация категорий и настройка settingsbot.json
+print_step "Синхронизация категорий и настройка Telegram бота..."
+export APP_DIR
+ADMIN_ID="$TELEGRAM_ADMIN_ID" python3 <<'PYTHON_SCRIPT'
+import json
+import os
+
+# Пути к файлам
+config_path = os.environ.get('APP_DIR') + "/config/settings.json"
+settingsbot_path = os.environ.get('APP_DIR') + "/telegram_bot/settingsbot.json"
+admin_id = os.environ.get('ADMIN_ID', '')
+
+# Читаем категории из config/settings.json
+with open(config_path, 'r', encoding='utf-8') as f:
+    config = json.load(f)
+    categories = config.get('categories', [])
+
+# Читаем settingsbot.json
+with open(settingsbot_path, 'r', encoding='utf-8') as f:
+    settingsbot = json.load(f)
+
+# Обновляем категории и admin ID
+settingsbot['categories'] = categories
+
+# Преобразуем admin_id в int, убираем @ если есть
+admin_id_clean = admin_id.strip().lstrip('@')
+try:
+    admin_id_int = int(admin_id_clean)
+    settingsbot['authorized_users'] = [admin_id_int]
+except ValueError:
+    print(f"⚠️ Внимание: {admin_id} не является числовым ID")
+    print("Оставляем существующий список авторизованных пользователей")
+
+# Сохраняем обновленный settingsbot.json
+with open(settingsbot_path, 'w', encoding='utf-8') as f:
+    json.dump(settingsbot, f, ensure_ascii=False, indent=2)
+
+print("✅ Категории синхронизированы и Admin ID добавлен")
+PYTHON_SCRIPT
+
+chown $APP_USER:$APP_USER $APP_DIR/telegram_bot/settingsbot.json
+print_step "Настройка Telegram бота завершена"
 
 # Установка зависимостей и сборка
 print_step "Установка зависимостей и сборка приложения..."
@@ -361,4 +458,31 @@ echo "  - Просмотреть логи: journalctl -u shop-app -f"
 echo "  - Перезапустить: systemctl restart shop-app"
 echo ""
 echo "📝 Для обновления приложения используйте: ./update_vps.sh"
+echo ""
+
+# Создание архива telegram_bot для скачивания
+print_step "Создание архива Telegram бота для Windows..."
+cd $APP_DIR
+apt install -y zip > /dev/null 2>&1
+ZIP_FILE="telegram_bot_$(date +%Y%m%d_%H%M%S).zip"
+zip -r $ZIP_FILE telegram_bot/ -x "telegram_bot/__pycache__/*" > /dev/null 2>&1
+chown $APP_USER:$APP_USER $ZIP_FILE
+
+echo ""
+echo "=================================================="
+echo -e "${GREEN}🤖 TELEGRAM БОТ - ГОТОВ К СБОРКЕ${NC}"
+echo "=================================================="
+echo ""
+echo "Архив Telegram бота создан: $ZIP_FILE"
+echo ""
+echo "📥 Команда для скачивания на ваш Windows компьютер:"
+echo ""
+echo -e "${YELLOW}scp root@$(hostname -I | awk '{print $1}'):$APP_DIR/$ZIP_FILE .${NC}"
+echo ""
+echo "После скачивания:"
+echo "  1. Распакуйте архив"
+echo "  2. Запустите build_exe.bat в папке telegram_bot"
+echo "  3. Получите готовый .exe файл в папке dist/"
+echo ""
+echo "=================================================="
 echo ""
