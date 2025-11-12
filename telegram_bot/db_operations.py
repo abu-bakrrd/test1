@@ -3,6 +3,10 @@ from psycopg2.extras import RealDictCursor
 import os
 import json
 from pathlib import Path
+from dotenv import load_dotenv
+import time
+
+load_dotenv()
 
 
 def get_db_connection():

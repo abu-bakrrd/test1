@@ -12,6 +12,10 @@ import cloudinary.uploader
 import requests
 from io import BytesIO
 from pathlib import Path
+from dotenv import load_dotenv
+import time
+
+load_dotenv()
 from db_operations import (
     add_product, 
     delete_product, 
