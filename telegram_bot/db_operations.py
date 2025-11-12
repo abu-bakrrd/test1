@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, cast
 import os
 import json
 from pathlib import Path
@@ -91,6 +91,8 @@ def add_product(name: str, description: str, price: int, images: List[str], cate
     conn = None
     try:
         conn = get_db_connection()
+        if not conn:
+            return None
         cur = conn.cursor()
         cur.execute(
             'INSERT INTO products (name, description, price, images, category_id) VALUES (%s, %s, %s, %s, %s) RETURNING *',
@@ -100,7 +102,7 @@ def add_product(name: str, description: str, price: int, images: List[str], cate
         conn.commit()
         cur.close()
         conn.close()
-        return product
+        return cast(Optional[Dict[str, Any]], product)
     except Exception as e:
         print(f"Error adding product: {e}")
         if conn:
@@ -121,6 +123,8 @@ def delete_product(product_id: str) -> bool:
     conn = None
     try:
         conn = get_db_connection()
+        if not conn:
+            return False
         cur = conn.cursor()
         cur.execute('DELETE FROM products WHERE id = %s', (product_id,))
         deleted_count = cur.rowcount
@@ -148,6 +152,8 @@ def get_all_products(category_id: Optional[str] = None) -> List[Dict[str, Any]]:
     conn = None
     try:
         conn = get_db_connection()
+        if not conn:
+            return []
         cur = conn.cursor()
         
         if category_id:
@@ -158,7 +164,7 @@ def get_all_products(category_id: Optional[str] = None) -> List[Dict[str, Any]]:
         products = cur.fetchall()
         cur.close()
         conn.close()
-        return products
+        return cast(List[Dict[str, Any]], products)
     except Exception as e:
         print(f"Error getting products: {e}")
         if conn:
@@ -179,12 +185,14 @@ def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
     conn = None
     try:
         conn = get_db_connection()
+        if not conn:
+            return None
         cur = conn.cursor()
         cur.execute('SELECT * FROM products WHERE id = %s', (product_id,))
         product = cur.fetchone()
         cur.close()
         conn.close()
-        return product
+        return cast(Optional[Dict[str, Any]], product)
     except Exception as e:
         print(f"Error getting product: {e}")
         if conn:
@@ -205,12 +213,14 @@ def find_products_by_name(name: str) -> List[Dict[str, Any]]:
     conn = None
     try:
         conn = get_db_connection()
+        if not conn:
+            return []
         cur = conn.cursor()
         cur.execute('SELECT * FROM products WHERE name ILIKE %s', (f'%{name}%',))
         products = cur.fetchall()
         cur.close()
         conn.close()
-        return products
+        return cast(List[Dict[str, Any]], products)
     except Exception as e:
         print(f"Error searching products: {e}")
         if conn:
