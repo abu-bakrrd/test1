@@ -105,6 +105,55 @@ if ! grep -q "host.*all.*all.*127.0.0.1/32.*md5" "$PG_HBA"; then
     systemctl restart postgresql
 fi
 
+# Настройка удаленного доступа к PostgreSQL
+print_step "Настройка удаленного доступа к PostgreSQL..."
+echo ""
+echo "⚠️  Удаленный доступ позволит подключаться к БД с другого компьютера"
+echo "   (например, для запуска Telegram бота локально)"
+echo ""
+read -p "Открыть удаленный доступ к PostgreSQL? (yes/no): " ENABLE_REMOTE_DB
+
+if [ "$ENABLE_REMOTE_DB" = "yes" ]; then
+    print_step "Настройка PostgreSQL для удаленного доступа..."
+    
+    # Настройка postgresql.conf
+    PG_CONF="/etc/postgresql/$PG_VERSION/main/postgresql.conf"
+    
+    # Бэкап конфига
+    cp "$PG_CONF" "$PG_CONF.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+    
+    # Разрешаем прослушивание всех адресов
+    if grep -q "^listen_addresses" "$PG_CONF"; then
+        sed -i "s/^listen_addresses.*/listen_addresses = '*'/" "$PG_CONF"
+    else
+        echo "listen_addresses = '*'" >> "$PG_CONF"
+    fi
+    
+    # Настройка pg_hba.conf для внешних подключений
+    cp "$PG_HBA" "$PG_HBA.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+    
+    if ! grep -q "# Allow remote connections" "$PG_HBA"; then
+        echo "" >> "$PG_HBA"
+        echo "# Allow remote connections" >> "$PG_HBA"
+        echo "host    all             all             0.0.0.0/0               md5" >> "$PG_HBA"
+    fi
+    
+    # Открываем порт в firewall
+    if command -v ufw &> /dev/null; then
+        ufw allow 5432/tcp > /dev/null 2>&1
+    fi
+    
+    # Перезапускаем PostgreSQL
+    systemctl restart postgresql
+    
+    print_step "Удаленный доступ к PostgreSQL настроен!"
+    VPS_IP=$(hostname -I | awk '{print $1}')
+    echo "  📋 Строка подключения:"
+    echo "     DATABASE_URL=postgresql://$DB_USER:$DB_PASSWORD@$VPS_IP:5432/$DB_NAME"
+else
+    print_step "Удаленный доступ к PostgreSQL пропущен"
+fi
+
 # Получение кода
 APP_DIR="/home/$APP_USER/app"
 
@@ -151,6 +200,15 @@ sudo -u "$APP_USER" bash -c "cd $APP_DIR && npm run build" 2>/dev/null
 # Python
 sudo -u "$APP_USER" bash -c "cd $APP_DIR && python3 -m venv venv"
 sudo -u "$APP_USER" bash -c "cd $APP_DIR && source venv/bin/activate && pip install --quiet --upgrade pip && pip install --quiet -r requirements.txt" 2>/dev/null
+
+# Инициализация таблиц базы данных
+print_step "Инициализация таблиц базы данных..."
+sudo -u "$APP_USER" bash -c "cd $APP_DIR && source venv/bin/activate && python3 init_tables.py" 2>/dev/null
+if [ $? -eq 0 ]; then
+    print_step "Таблицы базы данных успешно созданы!"
+else
+    print_warning "Ошибка при инициализации таблиц. Возможно, они уже существуют."
+fi
 
 # Права доступа
 print_step "Настройка прав доступа..."

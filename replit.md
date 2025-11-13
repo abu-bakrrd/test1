@@ -12,7 +12,15 @@ This is a **universal template** for creating e-commerce Telegram Mini Apps. The
 
 ## Recent Changes
 
-### November 12, 2025 (Latest) - Remote Database Access & Bot Deployment
+### November 13, 2025 (Latest) - Automated Database Setup & Remote Access
+- **Automatic Database Initialization**: Database tables now created automatically during deployment
+- **Interactive Remote DB Access**: Deploy scripts now ask if you want to enable remote PostgreSQL access
+- **One-Step Setup**: No manual database configuration needed - everything happens during deployment
+- **Smart Defaults**: Both `auto_deploy.sh` and `deploy_vps.sh` handle DB setup automatically
+- **Secure Remote Access**: Optional remote DB access with automatic firewall configuration
+- **Connection String Display**: Shows ready-to-use DATABASE_URL after enabling remote access
+
+### November 12, 2025 - Remote Database Access & Bot Deployment
 - **Remote DB Access**: New `enable_remote_db.sh` script to configure PostgreSQL for remote connections
 - **Local Bot Development**: Full support for running bot locally on Windows/Mac with remote DB connection
 - **VPS Bot Deployment**: New `deploy_bot_to_vps.sh` for running bot as systemd service on VPS
