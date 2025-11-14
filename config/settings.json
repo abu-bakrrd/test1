@@ -1,52 +1,58 @@
 {
-  "shopName": "My Store",
-  "description": "Your online store description",
+  "shopName": "Monvoir",
+  "description": "Одевайся стильно. Без лишних слов.",
   "logo": "/config/logo.svg",
   "currency": {
-    "symbol": "$",
-    "code": "USD",
-    "position": "before"
+    "symbol": "UZS",
+    "code": "UZS",
+    "position": "after"
   },
-  "managerContact": "@your_manager",
+  "managerContact": "@gayupov_a",
   "categories": [
     {
-      "id": "category-1",
-      "name": "Category 1"
+      "id": "0",
+      "name": "Головной убор"
     },
     {
-      "id": "category-2",
-      "name": "Category 2"
+      "id": "1",
+      "name": "Вверхняя одежда"
     },
     {
-      "id": "category-3",
-      "name": "Category 3"
+      "id": "2",
+      "name": "Нижняя одежда"
     },
     {
-      "id": "category-4",
-      "name": "Category 4"
+      "id": "3",
+      "name": "Обувь"
     },
     {
-      "id": "category-5",
-      "name": "Category 5"
+      "id": "4",
+      "name": "Аксессуар"
     }
   ],
   "colorScheme": {
-    "background": "#FEFEFE",
-    "foreground": "#1A1A1A",
-    "card": "#FFFFFF",
-    "cardForeground": "#1A1A1A",
-    "primary": "#3B82F6",
-    "primaryForeground": "#FFFFFF",
-    "secondary": "#6366F1",
-    "secondaryForeground": "#FFFFFF",
-    "muted": "#F5F5F5",
-    "mutedForeground": "#737373",
-    "accent": "#8B5CF6",
-    "accentForeground": "#FFFFFF",
-    "border": "#E5E5E5",
-    "input": "#E5E5E5",
-    "ring": "#E5E7EB"
-  },
+  "background": "#FEFEFE",
+  "foreground": "#1A1A1A",
+  "card": "#FFFFFF",
+  "cardForeground": "#1A1A1A",
+
+  "primary": "#B08733",
+  "primaryForeground": "#FFFFFF",
+
+  "secondary": "#D1A85A",
+  "secondaryForeground": "#FFFFFF",
+
+  "muted": "#F5F5F5",
+  "mutedForeground": "#737373",
+
+  "accent": "#B08733",
+  "accentForeground": "#FFFFFF",
+
+  "border": "#E5E5E5",
+  "input": "#E5E5E5",
+  "ring": "#E5E7EB"
+}
+,
   "sortOptions": [
     {
       "id": "new",
